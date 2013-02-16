@@ -7,10 +7,13 @@
 public class ContactImpl implements Contact {
 	private String name;
 	private int id;
+	private String notes;
 
 
 	public ContactImpl(String name, int id) {
-
+		this.name = name;
+		this.id = id;
+		notes = "";
 	}
 
 	/**
@@ -19,7 +22,7 @@ public class ContactImpl implements Contact {
 	* @return the ID of the contact.
 	*/
 	public int getId(){
-		return 0;
+		return id;
 
 	}
 	/**
@@ -28,7 +31,7 @@ public class ContactImpl implements Contact {
 	* @return the name of the contact.
 	*/
 	public String getName(){
-		return "xxx";
+		return name;
 
 	}
 	/**
@@ -40,7 +43,7 @@ public class ContactImpl implements Contact {
 	* @return a string with notes about the contact, maybe empty.
 	*/
 	public String getNotes(){
-		return "xxx";
+		return notes;
 
 	}
 	/**
@@ -49,6 +52,6 @@ public class ContactImpl implements Contact {
 	* @param note the notes to be added
 	*/
 	public void addNotes(String note){
-
+		notes = notes + "\n" + note;
 	}
 }
