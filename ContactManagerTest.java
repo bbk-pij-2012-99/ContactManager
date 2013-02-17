@@ -3,10 +3,12 @@ import static org.junit.Assert.*;
 import java.util.Calendar;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.List;
 
 public class ContactManagerTest {
 
 	private ContactManager testManager;
+	private Contact contact;
 	private Set<Contact> contacts;
 	private Calendar date;
 	private Calendar pastDate;
@@ -14,7 +16,7 @@ public class ContactManagerTest {
 	@Before
 	public void buildUp() {
 		testManager = new ContactManagerImpl();
-		Contact contact = new ContactImpl("Jane", 1);
+		contact = new ContactImpl("Jane", 1);
 		contacts = new HashSet<>();
 		contacts.add(contact);
 		date = Calendar.getInstance();
@@ -171,6 +173,82 @@ public class ContactManagerTest {
 		}
 	}
 
+	@Test
+	public void testGetFutureMeeting() {
+		int id = testManager.addFutureMeeting(contacts, date);
+		FutureMeeting futureMeeting = testManager.getFutureMeeting(id);
+		Calendar outputDate = futureMeeting.getDate();
+		assertEquals(outputDate, date);
+	}
+
+	@Test
+	public void testGetFutureMeetingDateEx() {
+		testManager.addNewPastMeeting(contacts, pastDate, "Some notes."); // First meeting therefore Id = 1
+		try {
+			FutureMeeting futureMeeting = testManager.getFutureMeeting(1);	
+			fail();
+		}
+		catch(IllegalArgumentException e) {
+			assertEquals("Meeting occurs in the past.", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testGetFutureMeetingEx() {
+		try {
+			FutureMeeting futureMeeting = testManager.getFutureMeeting(10);	
+			fail();
+		}
+		catch(NullPointerException e) {
+			assertEquals("Meeting does not exist.", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testGetMeeting() {
+		testManager.addNewPastMeeting(contacts, pastDate, "Notes."); // First meeting therefore Id = 1
+		int id = testManager.addFutureMeeting(contacts, date);
+		Meeting pastMeeting = testManager.getMeeting(1);
+		assertEquals(pastMeeting.getId(), 1);
+		Meeting futureMeeting = testManager.getMeeting(id);
+		assertEquals(futureMeeting.getId(), id);
+		Meeting nullMeeting = testManager.getMeeting(12);
+		assertNull(nullMeeting);
+	}
+
+	@Test
+	public void testGetFutureMeetingList() {
+		List<Meeting> emptyList = testManager.getFutureMeetingList(contact);
+		assertTrue(emptyList.isEmpty());
+
+		Contact Bob = new ContactImpl("Bob", 2);
+		Set<Contact> moreContacts = new HashSet<>();
+		moreContacts.add(Bob);
+		moreContacts.add(contact);
+		Calendar newDate = Calendar.getInstance();
+		newDate.set(2013, 5, 4, 11, 0);
+		int id1 = testManager.addFutureMeeting(contacts, date);
+		int id2 = testManager.addFutureMeeting(moreContacts, newDate);
+		Meeting meeting1 = testManager.getMeeting(id1);
+		Meeting meeting2 = testManager.getMeeting(id2);
+		
+		List<Meeting> outputList = testManager.getFutureMeetingList(contact);
+		assertEquals(outputList.get(0), meeting1);
+		assertEquals(outputList.get(1), meeting2);
+		assertEquals(outputList.size(), 2);
+	}
+
+	@Test
+	public void testGetFutureMeetingListEx() {
+		Contact Bob = new ContactImpl("Bob", 2);
+		try {
+			List<Meeting> exList = testManager.getFutureMeetingList(Bob);
+			fail();
+		}
+		catch(IllegalArgumentException e) {
+			assertEquals("Contact does not exist.", e.getMessage());
+		}
+	}
 
 
 }
