@@ -32,19 +32,116 @@ public class ContactManagerTest {
 	}
 
 	@Test
+	public void testAddNewContactGetContactByName() {
+		Set<Contact> emptySet = testManager.getContacts("Jed");
+		assertTrue(emptySet.isEmpty());
+
+		testManager.addNewContact("Jed Richards", "Flash developer."); // 1st contact therefore Id = 1 
+		Set<Contact> output = testManager.getContacts("Jed");
+		assertEquals(output.size(), 1);
+		for (Contact c : output) {
+			assertEquals(c.getId(), 1);	
+		}
+		
+	}
+
+	@Test
+	public void testGetContactByNameMultiple() {
+		testManager.addNewContact("Fred Smith", "Notes.");
+		testManager.addNewContact("John Jones", "More notes.");
+		testManager.addNewContact("Mary Smith", "Notes.");
+		Set<Contact> output = testManager.getContacts("Smith");
+		assertEquals(output.size(), 2);
+	}
+
+	@Test
+	public void testGetContactByNameNull() {
+		String name = null;
+		try {
+			testManager.getContacts(name);
+			fail();
+		}
+		catch(NullPointerException e) {
+			assertEquals("No name given.", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testAddNewContactNullName() {
+		String name = null;
+		try {
+			testManager.addNewContact(name, "Notes.");
+			fail();
+		}
+		catch(NullPointerException e) {
+			assertEquals("No name given.", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testAddNewContactNullNotes() {
+		String notes = null;
+		try {
+			testManager.addNewContact("Jed Richards", notes);
+			fail();
+		}
+		catch(NullPointerException e) {
+			assertEquals("No notes given.", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testGetContactsById() {
+		testManager.addNewContact("Jed Richards", "Notes.");
+		testManager.addNewContact("Clare Matthews", "Other notes.");
+		testManager.addNewContact("Willy Wonka", "Chocolate maker.");
+		Set<Contact> output = testManager.getContacts(1, 3);
+		assertEquals(output.size(), 2);
+	}
+
+	@Test
+	public void testGetContactsByIdEx() {
+		testManager.addNewContact("Jed Richards", "Notes.");
+		try {
+			Set<Contact> output = testManager.getContacts(1, 2);
+			fail();
+		}
+		catch(IllegalArgumentException e) {
+			assertEquals("Contact does not exist.", e.getMessage());
+		}
+	}
+
+	@Test
 	public void testAddFutureMeetingId() {
-		int id = testManager.addFutureMeeting(contacts, date);
+		testManager.addNewContact("Jim", "notes."); // 1st contact therefore Id = 1
+		Set<Contact> testContacts = testManager.getContacts(1);
+		int id = testManager.addFutureMeeting(testContacts, date);
 		assertEquals(id, 1);
 	}
 	
 	@Test
 	public void testAddFutureMeetingDate() {
+		testManager.addNewContact("Jim", "notes."); // 1st contact therefore Id = 1
+		contacts = testManager.getContacts(1);
 		try {
 			testManager.addFutureMeeting(contacts, pastDate);
 			fail();			
 		}
 		catch(IllegalArgumentException e) {
 			assertEquals("Meeting occurs in the past.", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testAddFutureMeetingContact() {
+		Contact Bob = new ContactImpl("Bob", 1);
+		Set<Contact> newContacts = new HashSet<>();
+		newContacts.add(Bob);
+		try {
+			testManager.addFutureMeeting(newContacts, date);
+		}
+		catch(IllegalArgumentException e) {
+			assertEquals("Contact does not exist.", e.getMessage());
 		}
 	}
 
@@ -319,87 +416,5 @@ public class ContactManagerTest {
 		}
 	}
 
-	@Test
-	public void testAddNewContactGetContactByName() {
-		Set<Contact> emptySet = testManager.getContacts("Jed");
-		assertTrue(emptySet.isEmpty());
-
-		testManager.addNewContact("Jed Richards", "Flash developer."); // 1st contact therefore Id = 1 
-		Set<Contact> output = testManager.getContacts("Jed");
-		Iterator<Contact> iter = output.iterator();
-		assertEquals(output.size(), 1);
-		assertEquals(iter.next().getId(), 1);
-	}
-
-	@Test
-	public void testGetContactByNameMultiple() {
-		testManager.addNewContact("Fred Smith", "Notes.");
-		testManager.addNewContact("John Jones", "More notes.");
-		testManager.addNewContact("Mary Smith", "Notes.");
-		Set<Contact> output = testManager.getContacts("Smith");
-		Iterator<Contact> iter = output.iterator();
-		assertEquals(output.size(), 2);
-		assertEquals(iter.next().getName(), "Fred Smith");
-	}
-
-	@Test
-	public void testGetContactByNameNull() {
-		String name = null;
-		try {
-			testManager.getContacts(name);
-			fail();
-		}
-		catch(NullPointerException e) {
-			assertEquals("No name given.", e.getMessage());
-		}
-	}
-
-	@Test
-	public void testAddNewContactNullName() {
-		String name = null;
-		try {
-			testManager.addNewContact(name, "Notes.");
-			fail();
-		}
-		catch(NullPointerException e) {
-			assertEquals("No name given.", e.getMessage());
-		}
-	}
-
-	@Test
-	public void testAddNewContactNullNotes() {
-		String notes = null;
-		try {
-			testManager.addNewContact("Jed Richards", notes);
-			fail();
-		}
-		catch(NullPointerException e) {
-			assertEquals("No notes given.", e.getMessage());
-		}
-	}
-
-	@Test
-	public void testGetContactsById() {
-		testManager.addNewContact("Jed Richards", "Notes.");
-		testManager.addNewContact("Clare Matthews", "Other notes.");
-		testManager.addNewContact("Willy Wonka", "Chocolate maker.");
-		Set<Contact> output = testManager.getContacts(1, 3);
-		Iterator<Contact> iter = output.iterator();
-		assertEquals(output.size(), 2);
-		assertEquals(iter.next().getName(), "Jed Richards");
-	}
-
-	@Test
-	public void testGetContactsByIdEx() {
-		testManager.addNewContact("Jed Richards", "Notes.");
-		try {
-			Set<Contact> output = testManager.getContacts(1, 2);
-			fail();
-		}
-		catch(IllegalArgumentException e) {
-			assertEquals("Contact does not exist.", e.getMessage());
-		}
-	}
-
-
+	
 }

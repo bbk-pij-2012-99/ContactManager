@@ -1,12 +1,33 @@
 import java.util.Calendar;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
+import java.util.HashSet;
+import java.util.Iterator;
 /**
 * A class to manage your contacts and meetings.
 */
 public class ContactManagerImpl implements ContactManager {
 	private Set<Contact> allContacts;
-	private List<Meeting> allMeetings;
+	private List<Meeting> allFutureMeetings;
+	private List<PastMeeting> allPastMeetings;
+	private int contactCount;
+	private int meetingCount;
+
+	public ContactManagerImpl() {
+		allContacts = new HashSet<>(); // Will be read in from file
+		allFutureMeetings = new ArrayList<>(); // Will be read in from file
+		allPastMeetings = new ArrayList<>(); // Will be read in from file
+
+		/**
+		* Assuming nothing is deleted from the database, size of lists are used to
+		* generate unique ID for contacts and meetings
+		*/
+		contactCount = allContacts.size();
+		meetingCount = allFutureMeetings.size() + allPastMeetings.size();
+	}
+
+
 	/**
 	* Add a new meeting to be held in the future.
 	*
@@ -17,7 +38,23 @@ public class ContactManagerImpl implements ContactManager {
 	* of if any contact is unknown / non-existent
 	*/
 	public int addFutureMeeting(Set<Contact> contacts, Calendar date){
-		return 0;
+
+		Calendar currentDate = Calendar.getInstance();
+		if (date.before(currentDate)) {
+			throw new IllegalArgumentException("Meeting occurs in the past.");
+		}
+
+		Iterator<Contact> iter = contacts.iterator();
+		for (Contact c : contacts) {
+			if (!allContacts.contains(c)) {
+				throw new IllegalArgumentException("");
+			}
+		}
+
+		int id = ++meetingCount;
+		Meeting meeting = new MeetingImpl(id, date, contacts);
+		allFutureMeetings.add(meeting);
+		return id;
 	}
 	/**
 	* Returns the PAST meeting with the requested ID, or null if it there is none.
@@ -135,6 +172,17 @@ public class ContactManagerImpl implements ContactManager {
 	*/
 	public void addNewContact(String name, String notes){
 
+		if(name == null) {
+			throw new NullPointerException("No name given.");
+		}
+		if(notes == null) {
+			throw new NullPointerException("No notes given.");
+		}
+
+		int id = ++contactCount;
+		Contact contact = new ContactImpl(name, id);
+		contact.addNotes(notes);
+		allContacts.add(contact);
 	}
 	/**
 	* Returns a list containing the contacts that correspond to the IDs.
@@ -144,7 +192,22 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws IllegalArgumentException if any of the IDs does not correspond to a real contact
 	*/
 	public Set<Contact> getContacts(int... ids){
-		Set<Contact> contacts = null;
+
+		Set<Contact> contacts = new HashSet<>();
+		for (int i : ids) {
+			int exists = 0;
+			for (Contact c : allContacts) {
+				if (c.getId() == i) {
+					contacts.add(c);
+					exists = 1;
+					break;
+				}
+			}
+			if (exists == 0) {
+				throw new IllegalArgumentException("Contact does not exist.");
+			}
+		}
+		
 		return contacts;
 	}
 	/**
@@ -155,7 +218,17 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws NullPointerException if the parameter is null
 	*/
 	public Set<Contact> getContacts(String name){
-		Set<Contact> contacts = null;
+
+		if (name == null) {
+			throw new NullPointerException("No name given.");
+		}
+
+		Set<Contact> contacts = new HashSet<>();
+		for (Contact c : allContacts) {
+			if(c.getName().contains(name)) {
+				contacts.add(c);
+			}
+		}
 		return contacts;
 	}
 	/**
