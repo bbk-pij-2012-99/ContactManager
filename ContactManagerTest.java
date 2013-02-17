@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Iterator;
 
 public class ContactManagerTest {
 
@@ -217,7 +218,7 @@ public class ContactManagerTest {
 	}
 
 	@Test
-	public void testGetFutureMeetingList() {
+	public void testGetFutureMeetingListByContact() {
 		List<Meeting> emptyList = testManager.getFutureMeetingList(contact);
 		assertTrue(emptyList.isEmpty());
 
@@ -239,10 +240,160 @@ public class ContactManagerTest {
 	}
 
 	@Test
-	public void testGetFutureMeetingListEx() {
+	public void testGetFutureMeetingListByContactEx() {
 		Contact Bob = new ContactImpl("Bob", 2);
 		try {
 			List<Meeting> exList = testManager.getFutureMeetingList(Bob);
+			fail();
+		}
+		catch(IllegalArgumentException e) {
+			assertEquals("Contact does not exist.", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testGetFutureMeetingListByDate() {
+		List<Meeting> emptyList = testManager.getFutureMeetingList(date);
+		assertTrue(emptyList.isEmpty());
+
+		Calendar earlierTime = Calendar.getInstance();
+		earlierTime.set(2013, 4, 1, 10, 0);
+		int id1 = testManager.addFutureMeeting(contacts, date);
+		int id2 = testManager.addFutureMeeting(contacts, earlierTime);
+		Meeting meeting1 = testManager.getMeeting(id1);
+		Meeting meeting2 = testManager.getMeeting(id2);
+
+		List<Meeting> outputList = testManager.getFutureMeetingList(date);
+		assertEquals(outputList.get(0), meeting2);
+		assertEquals(outputList.get(1), meeting1);
+		assertEquals(outputList.size(), 2);
+
+		Calendar shortDate = Calendar.getInstance();
+		shortDate.set(2013, 4, 1);
+		List<Meeting> sameList = testManager.getFutureMeetingList(shortDate);
+		assertEquals(outputList, sameList);
+	}
+
+	@Test
+	public void testGetFurtureMeetingListByPastDate() {		
+		testManager.addNewPastMeeting(contacts, pastDate, "Notes."); // 1st meeting therefore Id = 1
+		Meeting pastMeeting = testManager.getMeeting(1);
+		List<Meeting> pastMeetingList = testManager.getFutureMeetingList(pastDate);
+		assertEquals(pastMeetingList.get(0), pastMeeting);
+		assertEquals(pastMeetingList.size(), 1);
+	}
+
+
+	@Test
+	public void testGetPastMeetingList() {
+		List<PastMeeting> emptyList = testManager.getPastMeetingList(contact);
+		assertTrue(emptyList.isEmpty());
+
+		Contact Bob = new ContactImpl("Bob", 2);
+		Set<Contact> moreContacts = new HashSet<>();
+		moreContacts.add(Bob);
+		moreContacts.add(contact);
+		Calendar newDate = Calendar.getInstance();
+		newDate.set(2012, 11, 14, 11, 0);
+		testManager.addNewPastMeeting(contacts, pastDate, "Notes."); // 1st meeting therefore Id = 1
+		testManager.addNewPastMeeting(moreContacts, newDate, "More notes."); // 2nd meeting therefore Id = 2
+		Meeting meeting1 = testManager.getPastMeeting(1);
+		Meeting meeting2 = testManager.getPastMeeting(2);
+		
+		List<PastMeeting> outputList = testManager.getPastMeetingList(contact);
+		assertEquals(outputList.get(0), meeting1);
+		assertEquals(outputList.get(1), meeting2);
+		assertEquals(outputList.size(), 2);
+	}
+
+
+	@Test
+	public void testGetPastMeetingListByEx() {
+		Contact Bob = new ContactImpl("Bob", 2);
+		try {
+			List<PastMeeting> exList = testManager.getPastMeetingList(Bob);
+			fail();
+		}
+		catch(IllegalArgumentException e) {
+			assertEquals("Contact does not exist.", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testAddNewContactGetContactByName() {
+		Set<Contact> emptySet = testManager.getContacts("Jed");
+		assertTrue(emptySet.isEmpty());
+
+		testManager.addNewContact("Jed Richards", "Flash developer."); // 1st contact therefore Id = 1 
+		Set<Contact> output = testManager.getContacts("Jed");
+		Iterator<Contact> iter = output.iterator();
+		assertEquals(output.size(), 1);
+		assertEquals(iter.next().getId(), 1);
+	}
+
+	@Test
+	public void testGetContactByNameMultiple() {
+		testManager.addNewContact("Fred Smith", "Notes.");
+		testManager.addNewContact("John Jones", "More notes.");
+		testManager.addNewContact("Mary Smith", "Notes.");
+		Set<Contact> output = testManager.getContacts("Smith");
+		Iterator<Contact> iter = output.iterator();
+		assertEquals(output.size(), 2);
+		assertEquals(iter.next().getName(), "Fred Smith");
+	}
+
+	@Test
+	public void testGetContactByNameNull() {
+		String name = null;
+		try {
+			testManager.getContacts(name);
+			fail();
+		}
+		catch(NullPointerException e) {
+			assertEquals("No name given.", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testAddNewContactNullName() {
+		String name = null;
+		try {
+			testManager.addNewContact(name, "Notes.");
+			fail();
+		}
+		catch(NullPointerException e) {
+			assertEquals("No name given.", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testAddNewContactNullNotes() {
+		String notes = null;
+		try {
+			testManager.addNewContact("Jed Richards", notes);
+			fail();
+		}
+		catch(NullPointerException e) {
+			assertEquals("No notes given.", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testGetContactsById() {
+		testManager.addNewContact("Jed Richards", "Notes.");
+		testManager.addNewContact("Clare Matthews", "Other notes.");
+		testManager.addNewContact("Willy Wonka", "Chocolate maker.");
+		Set<Contact> output = testManager.getContacts(1, 3);
+		Iterator<Contact> iter = output.iterator();
+		assertEquals(output.size(), 2);
+		assertEquals(iter.next().getName(), "Jed Richards");
+	}
+
+	@Test
+	public void testGetContactsByIdEx() {
+		testManager.addNewContact("Jed Richards", "Notes.");
+		try {
+			Set<Contact> output = testManager.getContacts(1, 2);
 			fail();
 		}
 		catch(IllegalArgumentException e) {
