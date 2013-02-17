@@ -7,6 +7,7 @@ import java.util.HashSet;
 public class MeetingTest {
 
 	private Meeting testMeeting;
+	private PastMeeting pastMeeting;
 	private Calendar date;
 	private Set<Contact> contacts;
 
@@ -20,6 +21,7 @@ public class MeetingTest {
 		contacts.add(contact1);
 		contacts.add(contact2);
 		testMeeting = new MeetingImpl(1, date, contacts);
+		pastMeeting = new PastMeetingImpl(2, date, contacts);
 	}
 
 
@@ -41,4 +43,15 @@ public class MeetingTest {
 		assertEquals(contacts, output);
 	}
 
+	@Test
+	public void testPastMeeting() {
+		int id = pastMeeting.getId();
+		assertEquals(id, 2);
+		Calendar outputDate = pastMeeting.getDate();
+		assertEquals(date, outputDate);
+		Set<Contact> outputContacts = pastMeeting.getContacts();
+		assertEquals(contacts, outputContacts);
+		String notes = pastMeeting.getNotes();
+		assertEquals("", notes);
+	}
 }

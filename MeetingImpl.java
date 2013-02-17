@@ -7,9 +7,9 @@ import java.util.HashSet;
 * Meetings have unique IDs, scheduled date and a list of participating contacts
 */
 public class MeetingImpl implements Meeting {
-	private int id;
-	private Calendar date;
-	private Set<Contact> contacts;
+	protected int id;
+	protected Calendar date;
+	protected Set<Contact> contacts;
 
 	public MeetingImpl(int id, Calendar date, Set<Contact> contacts) {
 		this.id = id;
