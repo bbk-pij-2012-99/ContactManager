@@ -12,9 +12,10 @@ public class MeetingImpl implements Meeting {
 	private Set<Contact> contacts;
 
 	public MeetingImpl(int id, Calendar date, Set<Contact> contacts) {
-
+		this.id = id;
+		this.date = date;
+		this.contacts = contacts;
 	}
-
 
 	/**
 	* Returns the id of the meeting.
@@ -22,7 +23,7 @@ public class MeetingImpl implements Meeting {
 	* @return the id of the meeting.
 	*/
 	public int getId(){
-		return 0;
+		return id;
 	}
 	/**
 	* Return the date of the meeting.
@@ -30,8 +31,7 @@ public class MeetingImpl implements Meeting {
 	* @return the date of the meeting.
 	*/
 	public Calendar getDate(){
-		Calendar c = Calendar.getInstance();
-		return c;
+		return date;
 	}
 	/**
 	* Return the details of people that attended the meeting.
@@ -43,7 +43,6 @@ public class MeetingImpl implements Meeting {
 	* @return the details of people that attended the meeting.
 	*/
 	public Set<Contact> getContacts(){
-		Set<Contact> contacts = new HashSet<>();
 		return contacts;
 	}
 }
