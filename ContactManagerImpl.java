@@ -5,6 +5,8 @@ import java.util.Set;
 * A class to manage your contacts and meetings.
 */
 public class ContactManagerImpl implements ContactManager {
+	private Set<Contact> allContacts;
+	private List<Meeting> allMeetings;
 	/**
 	* Add a new meeting to be held in the future.
 	*
@@ -15,7 +17,7 @@ public class ContactManagerImpl implements ContactManager {
 	* of if any contact is unknown / non-existent
 	*/
 	public int addFutureMeeting(Set<Contact> contacts, Calendar date){
-
+		return 0;
 	}
 	/**
 	* Returns the PAST meeting with the requested ID, or null if it there is none.
@@ -25,7 +27,8 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws IllegalArgumentException if there is a meeting with that ID happening in the future
 	*/
 	public PastMeeting getPastMeeting(int id){
-
+		PastMeeting meeting = null;
+		return meeting;
 	}
 	/**
 	* Returns the FUTURE meeting with the requested ID, or null if there is none.
@@ -35,7 +38,8 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws IllegalArgumentException if there is a meeting with that ID happening in the past
 	*/
 	public FutureMeeting getFutureMeeting(int id){
-
+		FutureMeeting meeting = null;
+		return meeting;
 	}
 	/**
 	* Returns the meeting with the requested ID, or null if it there is none.
@@ -44,7 +48,8 @@ public class ContactManagerImpl implements ContactManager {
 	* @return the meeting with the requested ID, or null if it there is none.
 	*/
 	public Meeting getMeeting(int id){
-
+		Meeting meeting = null;
+		return meeting;
 	}
 	/**
 	* Returns the list of future meetings scheduled with this contact.
@@ -58,7 +63,8 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws IllegalArgumentException if the contact does not exist
 	*/
 	public List<Meeting> getFutureMeetingList(Contact contact){
-
+		List<Meeting> meetings = null;
+		return meetings;
 	}
 	/**
 	* Returns the list of meetings that are scheduled for, or that took
@@ -72,7 +78,8 @@ public class ContactManagerImpl implements ContactManager {
 	* @return the list of meetings
 	*/
 	public List<Meeting> getFutureMeetingList(Calendar date){
-
+		List<Meeting> meetings = null;
+		return meetings;
 	}
 	/**
 	* Returns the list of past meetings in which this contact has participated.
@@ -86,7 +93,8 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws IllegalArgumentException if the contact does not exist
 	*/
 	public List<PastMeeting> getPastMeetingList(Contact contact){
-
+		List<PastMeeting> pastMeetings = null;
+		return pastMeetings;
 	}
 	/**
 	* Create a new record for a meeting that took place in the past.
@@ -136,7 +144,8 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws IllegalArgumentException if any of the IDs does not correspond to a real contact
 	*/
 	public Set<Contact> getContacts(int... ids){
-
+		Set<Contact> contacts = null;
+		return contacts;
 	}
 	/**
 	* Returns a list with the contacts whose name contains that string.
@@ -146,7 +155,8 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws NullPointerException if the parameter is null
 	*/
 	public Set<Contact> getContacts(String name){
-
+		Set<Contact> contacts = null;
+		return contacts;
 	}
 	/**
 	* Save all data to disk.
@@ -155,6 +165,6 @@ public class ContactManagerImpl implements ContactManager {
 	* closed and when/if the user requests it.
 	*/
 	public void flush(){
-		
+
 	}
 }
