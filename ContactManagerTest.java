@@ -389,37 +389,45 @@ public class ContactManagerTest {
 		}
 	}
 
-	// @Test
-	// public void testGetFutureMeetingListByDate() {
-	// 	List<Meeting> emptyList = testManager.getFutureMeetingList(date);
-	// 	assertTrue(emptyList.isEmpty());
+	@Test
+	public void testGetFutureMeetingListByDate() {
+		List<Meeting> emptyList = testManager.getFutureMeetingList(date);
+		assertTrue(emptyList.isEmpty());
 
-	// 	Calendar earlierTime = Calendar.getInstance();
-	// 	earlierTime.set(2013, 4, 1, 10, 0);
-	// 	int id1 = testManager.addFutureMeeting(contacts, date);
-	// 	int id2 = testManager.addFutureMeeting(contacts, earlierTime);
-	// 	Meeting meeting1 = testManager.getMeeting(id1);
-	// 	Meeting meeting2 = testManager.getMeeting(id2);
+		Calendar earlierTime = Calendar.getInstance();
+		earlierTime.set(2013, 4, 1, 10, 0);
 
-	// 	List<Meeting> outputList = testManager.getFutureMeetingList(date);
-	// 	assertEquals(outputList.get(0), meeting2);
-	// 	assertEquals(outputList.get(1), meeting1);
-	// 	assertEquals(outputList.size(), 2);
+		testManager.addNewContact("Fred List", "Long list"); // 1st contact therefore Id = 1
+		Set<Contact> testContacts = testManager.getContacts(1);
 
-	// 	Calendar shortDate = Calendar.getInstance();
-	// 	shortDate.set(2013, 4, 1);
-	// 	List<Meeting> sameList = testManager.getFutureMeetingList(shortDate);
-	// 	assertEquals(outputList, sameList);
-	// }
+		int id1 = testManager.addFutureMeeting(testContacts, date);
+		int id2 = testManager.addFutureMeeting(testContacts, earlierTime);
+		Meeting meeting1 = testManager.getMeeting(id1);
+		Meeting meeting2 = testManager.getMeeting(id2);
 
-	// @Test
-	// public void testGetFurtureMeetingListByPastDate() {		
-	// 	testManager.addNewPastMeeting(contacts, pastDate, "Notes."); // 1st meeting therefore Id = 1
-	// 	Meeting pastMeeting = testManager.getMeeting(1);
-	// 	List<Meeting> pastMeetingList = testManager.getFutureMeetingList(pastDate);
-	// 	assertEquals(pastMeetingList.get(0), pastMeeting);
-	// 	assertEquals(pastMeetingList.size(), 1);
-	// }
+		List<Meeting> outputList = testManager.getFutureMeetingList(date);
+		assertEquals(outputList.get(0), meeting2);
+		assertEquals(outputList.get(1), meeting1);
+		assertEquals(outputList.size(), 2);
+
+		Calendar shortDate = Calendar.getInstance();
+		shortDate.set(2013, 4, 1);
+		List<Meeting> sameList = testManager.getFutureMeetingList(shortDate);
+		assertEquals(outputList, sameList);
+	}
+
+	@Test
+	public void testGetFurtureMeetingListByPastDate() {		
+
+		testManager.addNewContact("Fred List", "Long list"); // 1st contact therefore Id = 1
+		Set<Contact> testContacts = testManager.getContacts(1);
+
+		testManager.addNewPastMeeting(testContacts, pastDate, "Notes."); // 1st meeting therefore Id = 1
+		Meeting pastMeeting = testManager.getMeeting(1);
+		List<Meeting> pastMeetingList = testManager.getFutureMeetingList(pastDate);
+		assertEquals(pastMeetingList.get(0), pastMeeting);
+		assertEquals(pastMeetingList.size(), 1);
+	}
 
 
 	// @Test

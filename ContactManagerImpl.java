@@ -183,8 +183,25 @@ public class ContactManagerImpl implements ContactManager {
 	* @return the list of meetings
 	*/
 	public List<Meeting> getFutureMeetingList(Calendar date){
-		List<Meeting> meetings = null;
-		return meetings;
+
+		List<Meeting> dateMeetings = new ArrayList<>();
+
+		for (Meeting meeting : allMeetings) {
+			if (compareDates(date, meeting.getDate())) {
+				dateMeetings = sortList(dateMeetings, meeting);
+			}	
+		}
+
+		return dateMeetings;
+
+	}
+
+	private boolean compareDates(Calendar date1, Calendar date2) {
+
+		if (date1.YEAR == date2.YEAR && date1.DAY_OF_YEAR == date2.DAY_OF_YEAR) {
+			return true;
+		}
+		return false;
 	}
 	/**
 	* Returns the list of past meetings in which this contact has participated.
