@@ -123,8 +123,53 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws IllegalArgumentException if the contact does not exist
 	*/
 	public List<Meeting> getFutureMeetingList(Contact contact){
-		List<Meeting> meetings = null;
-		return meetings;
+	
+		// Checks contact exists	
+		getContacts(contact.getId());
+
+		List<Meeting> contactMeetings = new ArrayList<>();
+
+		for (Meeting meeting : allMeetings) {
+			if (meeting instanceof FutureMeeting) {
+				if (meeting.getContacts().contains(contact)) {
+					contactMeetings = sortList(contactMeetings, meeting);
+				}	
+			}
+		}
+
+		return contactMeetings;
+
+	}
+	/**
+	* Returns list with new meeting inserted in the first index at which the meeting precedes
+	* the meeting at that index. If the meeting is already in the list it is not added.
+	*
+	* Assuming list is already sorted chronologically, earliest to latest occurence, the new
+	* meeting will be inserted to maintain the sorting.
+	*
+	* @param list a chronologically sorted list of meetings
+	* @param newMeeting the meeting to be inserted into the list
+	* @return the list with the new meeting inserted chronologically
+	*/
+	private List<Meeting> sortList(List<Meeting> list, Meeting newMeeting) {
+
+		if (list.contains(newMeeting)) {
+			return list;
+		}
+
+		Calendar newDate = newMeeting.getDate();
+
+		for (int i = 0; i < list.size(); i++) {
+			Calendar date = list.get(i).getDate();
+			if(newDate.before(date)) {
+				list.add(i, newMeeting);
+				return list;
+			}
+		}
+
+		list.add(newMeeting);
+		return list;
+			
 	}
 	/**
 	* Returns the list of meetings that are scheduled for, or that took
@@ -208,14 +253,22 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws NullPointerException if the notes are null
 	*/
 	public void addMeetingNotes(int id, String text){
+
+		if (text == null) {
+			throw new NullPointerException("No notes given.");
+		}
 		
-		// Meeting meeting = getMeeting(id);
+		Meeting meeting = getMeeting(id);
 
-		// if (meeting == null) {
-		// 	throw new IllegalArgumentException("Meeting does not exist.");
-		// }
+		if (meeting == null) {
+			throw new IllegalArgumentException("Meeting does not exist.");
+		}
 
-		// ((PastMeetingImpl) pastMeeting).addNotes(text);
+		if (meeting instanceof FutureMeeting) {
+			throw new IllegalStateException("Meeting occurs in the future.");
+		}
+
+		((PastMeetingImpl) meeting).addNotes(text);
 	}
 	/**
 	* Create a new contact with the specified name and notes.
