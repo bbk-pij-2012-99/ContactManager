@@ -7,6 +7,7 @@ javac -cp .:./lib/junit-4.10.jar ContactManagerImpl.java
 javac -cp .:./lib/junit-4.10.jar ContactImpl.java
 javac -cp .:./lib/junit-4.10.jar MeetingImpl.java
 javac -cp .:./lib/junit-4.10.jar PastMeetingImpl.java
+javac -cp .:./lib/junit-4.10.jar FutureMeetingImpl.java
 javac -cp .:./lib/junit-4.10.jar ContactTest.java
 javac -cp .:./lib/junit-4.10.jar MeetingTest.java
 javac -cp .:./lib/junit-4.10.jar ContactManagerTest.java

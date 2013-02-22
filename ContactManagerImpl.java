@@ -9,22 +9,20 @@ import java.util.Iterator;
 */
 public class ContactManagerImpl implements ContactManager {
 	private Set<Contact> allContacts;
-	private List<Meeting> allFutureMeetings;
-	private List<PastMeeting> allPastMeetings;
+	private List<Meeting> allMeetings;
 	private int contactCount;
 	private int meetingCount;
 
 	public ContactManagerImpl() {
 		allContacts = new HashSet<>(); // Will be read in from file
-		allFutureMeetings = new ArrayList<>(); // Will be read in from file
-		allPastMeetings = new ArrayList<>(); // Will be read in from file
+		allMeetings = new ArrayList<>(); // Will be read in from file
 
 		/**
 		* Assuming nothing is deleted from the database, size of lists are used to
 		* generate unique ID for contacts and meetings
 		*/
 		contactCount = allContacts.size();
-		meetingCount = allFutureMeetings.size() + allPastMeetings.size();
+		meetingCount = allMeetings.size();
 	}
 
 
@@ -51,8 +49,8 @@ public class ContactManagerImpl implements ContactManager {
 		}
 
 		int id = ++meetingCount;
-		Meeting meeting = new MeetingImpl(id, date, contacts);
-		allFutureMeetings.add(meeting);
+		Meeting meeting = new FutureMeetingImpl(id, date, contacts);
+		allMeetings.add(meeting);
 		return id;
 	}
 	/**
@@ -64,16 +62,14 @@ public class ContactManagerImpl implements ContactManager {
 	*/
 	public PastMeeting getPastMeeting(int id){
 
-		for (PastMeeting meeting : allPastMeetings) {
-			if (meeting.getId() == id) {
-				return meeting;
-			}
+		Meeting meeting = getMeeting(id);
+
+		if (meeting instanceof PastMeeting) {
+			return (PastMeeting) meeting;
 		}
 
-		for (Meeting meeting : allFutureMeetings) {
-			if (meeting.getId() == id) {
-				throw new IllegalArgumentException("Meeting occurs in the future.");
-			}
+		if (meeting instanceof FutureMeeting) {
+			throw new IllegalArgumentException("Meeting occurs in the future.");
 		}
 
 		return null;
@@ -86,8 +82,18 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws IllegalArgumentException if there is a meeting with that ID happening in the past
 	*/
 	public FutureMeeting getFutureMeeting(int id){
-		FutureMeeting meeting = null;
-		return meeting;
+		
+		Meeting meeting = getMeeting(id);
+
+		if (meeting instanceof PastMeeting) {
+			throw new IllegalArgumentException("Meeting occurs in the past.");
+		}
+
+		if (meeting instanceof FutureMeeting) {
+			return  (FutureMeeting) meeting;
+		}
+
+		return null;
 	}
 	/**
 	* Returns the meeting with the requested ID, or null if it there is none.
@@ -96,8 +102,14 @@ public class ContactManagerImpl implements ContactManager {
 	* @return the meeting with the requested ID, or null if it there is none.
 	*/
 	public Meeting getMeeting(int id){
-		Meeting meeting = null;
-		return meeting;
+
+		for (Meeting meeting : allMeetings) {
+			if (meeting.getId() == id) {
+				return meeting;
+			}
+		}
+		
+		return null;
 	}
 	/**
 	* Returns the list of future meetings scheduled with this contact.
@@ -177,9 +189,9 @@ public class ContactManagerImpl implements ContactManager {
 		}
 
 		int id = ++meetingCount;
-		PastMeeting meeting = new PastMeetingImpl(id, date, contacts);
+		Meeting meeting = new PastMeetingImpl(id, date, contacts);
+		allMeetings.add(meeting);
 		addMeetingNotes(id, text);
-		allPastMeetings.add(meeting);
 	}
 	/**
 	* Add notes to a meeting.
@@ -196,7 +208,14 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws NullPointerException if the notes are null
 	*/
 	public void addMeetingNotes(int id, String text){
+		
+		// Meeting meeting = getMeeting(id);
 
+		// if (meeting == null) {
+		// 	throw new IllegalArgumentException("Meeting does not exist.");
+		// }
+
+		// ((PastMeetingImpl) pastMeeting).addNotes(text);
 	}
 	/**
 	* Create a new contact with the specified name and notes.

@@ -24,4 +24,14 @@ public class PastMeetingImpl extends MeetingImpl implements PastMeeting {
 	public String getNotes(){
 		return notes;
 	}
+
+	/**
+	* Adds notes to the meeting. If notes already exist, the new notes are appended.
+	*
+	* @param text messages to be added about the meeting.
+	* @throws NullPointerException if the notes are null.
+	*/
+	public void addNotes(String text) {
+		notes = notes + "\n" + text;
+	}
 }
