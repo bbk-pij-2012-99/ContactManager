@@ -63,8 +63,20 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws IllegalArgumentException if there is a meeting with that ID happening in the future
 	*/
 	public PastMeeting getPastMeeting(int id){
-		PastMeeting meeting = null;
-		return meeting;
+
+		for (PastMeeting meeting : allPastMeetings) {
+			if (meeting.getId() == id) {
+				return meeting;
+			}
+		}
+
+		for (Meeting meeting : allFutureMeetings) {
+			if (meeting.getId() == id) {
+				throw new IllegalArgumentException("Meeting occurs in the future.");
+			}
+		}
+
+		return null;
 	}
 	/**
 	* Returns the FUTURE meeting with the requested ID, or null if there is none.
@@ -157,6 +169,7 @@ public class ContactManagerImpl implements ContactManager {
 		if (contacts.isEmpty()) {
 			throw new IllegalArgumentException("No contacts given.");
 		}
+
 		for (Contact c : contacts) {
 			if (!allContacts.contains(c)) {
 				throw new IllegalArgumentException("Contact does not exist.");
