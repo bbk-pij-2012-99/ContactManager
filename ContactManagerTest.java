@@ -430,40 +430,43 @@ public class ContactManagerTest {
 	}
 
 
-	// @Test
-	// public void testGetPastMeetingList() {
-	// 	List<PastMeeting> emptyList = testManager.getPastMeetingList(contact);
-	// 	assertTrue(emptyList.isEmpty());
-
-	// 	Contact Bob = new ContactImpl("Bob", 2);
-	// 	Set<Contact> moreContacts = new HashSet<>();
-	// 	moreContacts.add(Bob);
-	// 	moreContacts.add(contact);
-	// 	Calendar newDate = Calendar.getInstance();
-	// 	newDate.set(2012, 11, 14, 11, 0);
-	// 	testManager.addNewPastMeeting(contacts, pastDate, "Notes."); // 1st meeting therefore Id = 1
-	// 	testManager.addNewPastMeeting(moreContacts, newDate, "More notes."); // 2nd meeting therefore Id = 2
-	// 	Meeting meeting1 = testManager.getPastMeeting(1);
-	// 	Meeting meeting2 = testManager.getPastMeeting(2);
+	@Test
+	public void testGetPastMeetingList() {
+		Calendar newDate = Calendar.getInstance();
+		newDate.set(2012, 11, 14, 11, 0);
 		
-	// 	List<PastMeeting> outputList = testManager.getPastMeetingList(contact);
-	// 	assertEquals(outputList.get(0), meeting1);
-	// 	assertEquals(outputList.get(1), meeting2);
-	// 	assertEquals(outputList.size(), 2);
-	// }
+		testManager.addNewContact("Mr fixit", "Fixes things"); // 1st contact therefore Id = 1
+		testManager.addNewContact("Mrs fixit", "Also fixes things"); // 2nd contact therefore Id = 2
+		Set<Contact> testContacts = testManager.getContacts(1);
+		Iterator<Contact> iter = testContacts.iterator();
+		Contact contact1 = iter.next();
+
+		List<PastMeeting> emptyList = testManager.getPastMeetingList(contact1);
+		assertTrue(emptyList.isEmpty());
+
+		testManager.addNewPastMeeting(testContacts, pastDate, "Notes."); // 1st meeting therefore Id = 1
+		testManager.addNewPastMeeting(testManager.getContacts(1, 2), newDate, "More notes."); // 2nd meeting therefore Id = 2
+		Meeting meeting1 = testManager.getPastMeeting(1);
+		Meeting meeting2 = testManager.getPastMeeting(2);
+		
+		List<PastMeeting> outputList = testManager.getPastMeetingList(contact1);
+		assertEquals(outputList.get(0), meeting1);
+		assertEquals(outputList.get(1), meeting2);
+		assertEquals(outputList.size(), 2);
+	}
 
 
-	// @Test
-	// public void testGetPastMeetingListByEx() {
-	// 	Contact Bob = new ContactImpl("Bob", 2);
-	// 	try {
-	// 		List<PastMeeting> exList = testManager.getPastMeetingList(Bob);
-	// 		fail();
-	// 	}
-	// 	catch(IllegalArgumentException e) {
-	// 		assertEquals("Contact does not exist.", e.getMessage());
-	// 	}
-	// }
+	@Test
+	public void testGetPastMeetingListByEx() {
+		Contact Bob = new ContactImpl("Bob", 2);
+		try {
+			List<PastMeeting> exList = testManager.getPastMeetingList(Bob);
+			fail();
+		}
+		catch(IllegalArgumentException e) {
+			assertEquals("Contact does not exist.", e.getMessage());
+		}
+	}
 
 	
 }

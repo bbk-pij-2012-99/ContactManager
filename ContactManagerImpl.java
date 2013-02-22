@@ -195,7 +195,13 @@ public class ContactManagerImpl implements ContactManager {
 		return dateMeetings;
 
 	}
-
+	/**
+	* Returns true if the calendars represent the same date and false otherwise
+	*
+	* @param date1 the first calendar object to compare
+	* @param date2 the second calendar object to compare
+	* @return boolean logical of whether the dates are the same
+	*/
 	private boolean compareDates(Calendar date1, Calendar date2) {
 
 		if (date1.YEAR == date2.YEAR && date1.DAY_OF_YEAR == date2.DAY_OF_YEAR) {
@@ -215,9 +221,44 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws IllegalArgumentException if the contact does not exist
 	*/
 	public List<PastMeeting> getPastMeetingList(Contact contact){
-		List<PastMeeting> pastMeetings = null;
-		return pastMeetings;
+		
+		// Checks contact exists	
+		getContacts(contact.getId());
+
+		List<PastMeeting> contactMeetings = new ArrayList<>();
+
+		for (Meeting meeting : allMeetings) {
+			if (meeting instanceof PastMeeting) {
+				if (meeting.getContacts().contains(contact)) {
+
+					Calendar newDate = meeting.getDate();
+
+					if ((contactMeetings.size() == 0) || newDate.after(contactMeetings.get(contactMeetings.size()-1).getDate())) {
+						contactMeetings.add((PastMeeting) meeting);
+					}
+					else {
+						for (int i = 0; i < contactMeetings.size(); i++) {
+							Calendar date = contactMeetings.get(i).getDate();
+							if(newDate.before(date)) {
+								contactMeetings.add(i, (PastMeeting) meeting);
+								break;
+							}
+						}
+					}
+
+					//contactMeetings = sortList(contactMeetings, meeting);
+				}	
+			}
+		}
+
+//		return (List<PastMeeting>) (List<?>) contactMeetings;		
+		return contactMeetings;
 	}
+
+	// private List<T> getMeetingList<T>(Contact contact)  {
+
+	// }
+
 	/**
 	* Create a new record for a meeting that took place in the past.
 	*
