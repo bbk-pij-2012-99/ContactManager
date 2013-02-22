@@ -136,87 +136,101 @@ public class ContactManagerTest {
 		}
 	}
 
-	// @Test
-	// public void testAddFutureMeetingId() {
-	// 	testManager.addNewContact("Jim", "notes."); // 1st contact therefore Id = 1
-	// 	Set<Contact> testContacts = testManager.getContacts(1);
-	// 	int id = testManager.addFutureMeeting(testContacts, date);
-	// 	assertEquals(id, 1);
-	// }
+	@Test
+	public void testAddFutureMeetingId() {
+		testManager.addNewContact("Jim", "notes."); // 1st contact therefore Id = 1
+		Set<Contact> testContacts = testManager.getContacts(1);
+		int id = testManager.addFutureMeeting(testContacts, date);
+		assertEquals(id, 1);
+	}
 	
-	// @Test
-	// public void testAddFutureMeetingDate() {
-	// 	testManager.addNewContact("Jim", "notes."); // 1st contact therefore Id = 1
-	// 	contacts = testManager.getContacts(1);
-	// 	try {
-	// 		testManager.addFutureMeeting(contacts, pastDate);
-	// 		fail();			
-	// 	}
-	// 	catch(IllegalArgumentException e) {
-	// 		assertEquals("Meeting occurs in the past.", e.getMessage());
-	// 	}
-	// }
+	@Test
+	public void testAddFutureMeetingDate() {
+		testManager.addNewContact("Jim", "notes."); // 1st contact therefore Id = 1
+		contacts = testManager.getContacts(1);
+		try {
+			testManager.addFutureMeeting(contacts, pastDate);
+			fail();			
+		}
+		catch(IllegalArgumentException e) {
+			assertEquals("Meeting occurs in the past.", e.getMessage());
+		}
+	}
 
-	// @Test
-	// public void testAddFutureMeetingContact() {
-	// 	Contact Bob = new ContactImpl("Bob", 1);
-	// 	Set<Contact> newContacts = new HashSet<>();
-	// 	newContacts.add(Bob);
-	// 	try {
-	// 		testManager.addFutureMeeting(newContacts, date);
-	// 	}
-	// 	catch(IllegalArgumentException e) {
-	// 		assertEquals("Contact does not exist.", e.getMessage());
-	// 	}
-	// }
+	@Test
+	public void testAddFutureMeetingContact() {
+		Contact Bob = new ContactImpl("Bob", 1);
+		Set<Contact> newContacts = new HashSet<>();
+		newContacts.add(Bob);
+		try {
+			testManager.addFutureMeeting(newContacts, date);
+		}
+		catch(IllegalArgumentException e) {
+			assertEquals("Contact does not exist.", e.getMessage());
+		}
+	}
 
-	// @Test
-	// public void testAddPastMeetingContacts() {
-	// 	Set<Contact> emptyContacts = new HashSet<>();
-	// 	try {
-	// 		testManager.addNewPastMeeting(emptyContacts, pastDate, "Some notes.");
-	// 		fail();
-	// 	}
-	// 	catch(IllegalArgumentException e) {
-	// 		assertEquals("No contacts given.", e.getMessage());
-	// 	}
-	// }
+	@Test
+	public void testAddPastMeetingNoContacts() {
+		Set<Contact> emptyContacts = new HashSet<>();
+		try {
+			testManager.addNewPastMeeting(emptyContacts, pastDate, "Some notes.");
+			fail();
+		}
+		catch(IllegalArgumentException e) {
+			assertEquals("No contacts given.", e.getMessage());
+		}
+	}
 
-	// @Test
-	// public void testAddPastMeetingNullContact() {
-	// 	Set<Contact> nullContacts = null;
-	// 	try {
-	// 		testManager.addNewPastMeeting(nullContacts, pastDate, "Some notes.");
-	// 		fail();
-	// 	}
-	// 	catch(NullPointerException e) {
-	// 		assertEquals("No contacts given.", e.getMessage());
-	// 	}
-	// }
+	@Test
+	public void testAddPastMeetingContacts() {
+		Contact Bob = new ContactImpl("Bob", 1);
+		Set<Contact> newContacts = new HashSet<>();
+		newContacts.add(Bob);
+		try{
+			testManager.addNewPastMeeting(newContacts, pastDate, "Some notes.");
+			fail();
+		}
+		catch(IllegalArgumentException e) {
+			assertEquals("Contact does not exist.", e.getMessage());
+		}
+	}
 
-	// @Test
-	// public void testAddPastMeetingNullDate() {
-	// 	Calendar nullDate = null;
-	// 	try {
-	// 		testManager.addNewPastMeeting(contacts, nullDate, "Some notes.");
-	// 		fail();
-	// 	}
-	// 	catch(NullPointerException e) {
-	// 		assertEquals("No date given.", e.getMessage());
-	// 	}
-	// }
+	@Test
+	public void testAddPastMeetingNullContact() {
+		Set<Contact> nullContacts = null;
+		try {
+			testManager.addNewPastMeeting(nullContacts, pastDate, "Some notes.");
+			fail();
+		}
+		catch(NullPointerException e) {
+			assertEquals("No contacts given.", e.getMessage());
+		}
+	}
 
-	// @Test
-	// public void testAddPastMeetingNullNotes() {
-	// 	String notes = null;
-	// 	try {
-	// 		testManager.addNewPastMeeting(contacts, pastDate, notes);
-	// 		fail();
-	// 	}
-	// 	catch(NullPointerException e) {
-	// 		assertEquals("No notes given.", e.getMessage());
-	// 	}
-	// }
+	@Test
+	public void testAddPastMeetingNullDate() {
+		Calendar nullDate = null;
+		try {
+			testManager.addNewPastMeeting(contacts, nullDate, "Some notes.");
+			fail();
+		}
+		catch(NullPointerException e) {
+			assertEquals("No date given.", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testAddPastMeetingNullNotes() {
+		String notes = null;
+		try {
+			testManager.addNewPastMeeting(contacts, pastDate, notes);
+			fail();
+		}
+		catch(NullPointerException e) {
+			assertEquals("No notes given.", e.getMessage());
+		}
+	}
 
 	// @Test
 	// public void testGetPastMeeting() {

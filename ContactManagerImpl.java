@@ -44,10 +44,9 @@ public class ContactManagerImpl implements ContactManager {
 			throw new IllegalArgumentException("Meeting occurs in the past.");
 		}
 
-		Iterator<Contact> iter = contacts.iterator();
 		for (Contact c : contacts) {
 			if (!allContacts.contains(c)) {
-				throw new IllegalArgumentException("");
+				throw new IllegalArgumentException("Contact does not exist.");
 			}
 		}
 
@@ -145,6 +144,29 @@ public class ContactManagerImpl implements ContactManager {
 	*/
 	public void addNewPastMeeting(Set<Contact> contacts, Calendar date, String text){
 
+		if (contacts == null) {
+			throw new NullPointerException("No contacts given.");
+		}
+		if (date == null) {
+			throw new NullPointerException("No date given.");
+		}
+		if (text == null) {
+			throw new NullPointerException("No notes given.");
+		}
+
+		if (contacts.isEmpty()) {
+			throw new IllegalArgumentException("No contacts given.");
+		}
+		for (Contact c : contacts) {
+			if (!allContacts.contains(c)) {
+				throw new IllegalArgumentException("Contact does not exist.");
+			}
+		}
+
+		int id = ++meetingCount;
+		PastMeeting meeting = new PastMeetingImpl(id, date, contacts);
+		addMeetingNotes(id, text);
+		allPastMeetings.add(meeting);
 	}
 	/**
 	* Add notes to a meeting.
