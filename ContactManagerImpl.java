@@ -50,7 +50,7 @@ public class ContactManagerImpl implements ContactManager {
 
 		int id = ++meetingCount;
 		Meeting meeting = new FutureMeetingImpl(id, date, contacts);
-		allMeetings.add(meeting);
+		allMeetings = sortList(allMeetings, meeting);
 		return id;
 	}
 	/**
@@ -132,8 +132,8 @@ public class ContactManagerImpl implements ContactManager {
 		for (Meeting meeting : allMeetings) {
 			if (meeting instanceof FutureMeeting) {
 				if (meeting.getContacts().contains(contact)) {
-					contactMeetings = sortList(contactMeetings, meeting);
-				}	
+					contactMeetings.add(meeting);	
+				}
 			}
 		}
 
@@ -188,7 +188,7 @@ public class ContactManagerImpl implements ContactManager {
 
 		for (Meeting meeting : allMeetings) {
 			if (compareDates(date, meeting.getDate())) {
-				dateMeetings = sortList(dateMeetings, meeting);
+				dateMeetings.add(meeting);
 			}	
 		}
 
@@ -230,32 +230,15 @@ public class ContactManagerImpl implements ContactManager {
 		for (Meeting meeting : allMeetings) {
 			if (meeting instanceof PastMeeting) {
 				if (meeting.getContacts().contains(contact)) {
-
-					Calendar newDate = meeting.getDate();
-
-					if ((contactMeetings.size() == 0) || newDate.after(contactMeetings.get(contactMeetings.size()-1).getDate())) {
-						contactMeetings.add((PastMeeting) meeting);
-					}
-					else {
-						for (int i = 0; i < contactMeetings.size(); i++) {
-							Calendar date = contactMeetings.get(i).getDate();
-							if(newDate.before(date)) {
-								contactMeetings.add(i, (PastMeeting) meeting);
-								break;
-							}
-						}
-					}
-
-					//contactMeetings = sortList(contactMeetings, meeting);
+					contactMeetings.add((PastMeeting) meeting);
 				}	
 			}
 		}
-
-//		return (List<PastMeeting>) (List<?>) contactMeetings;		
+	
 		return contactMeetings;
 	}
 
-	// private List<T> getMeetingList<T>(Contact contact)  {
+	// private List<? extends Meeting> getMeetingList(Contact contact)  {
 
 	// }
 
@@ -293,7 +276,7 @@ public class ContactManagerImpl implements ContactManager {
 
 		int id = ++meetingCount;
 		Meeting meeting = new PastMeetingImpl(id, date, contacts);
-		allMeetings.add(meeting);
+		allMeetings = sortList(allMeetings, meeting);
 		addMeetingNotes(id, text);
 	}
 	/**
@@ -395,6 +378,30 @@ public class ContactManagerImpl implements ContactManager {
 			}
 		}
 		return contacts;
+	}
+	/**
+	* Converts any future meetings that have been held into past meetings.
+	* Meetings retain the same Id.
+	*
+	*/
+	public void checkForMeetingHeld() {
+
+		Calendar present = Calendar.getInstance();
+		present.set(2013, 5, 1, 10, 10); // Set in future for testing
+
+		for (int i = 0; i < allMeetings.size(); i++) {
+			Meeting meeting = allMeetings.get(i);
+			if (meeting instanceof FutureMeeting) {
+				if (meeting.getDate().before(present)) {
+					Meeting pastMeeting = new PastMeetingImpl(meeting.getId(), meeting.getDate(), meeting.getContacts());
+					allMeetings.set(i, pastMeeting);
+				}
+				else {
+					break;
+				}
+			}
+		}
+
 	}
 	/**
 	* Save all data to disk.

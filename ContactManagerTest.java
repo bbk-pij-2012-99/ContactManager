@@ -468,5 +468,16 @@ public class ContactManagerTest {
 		}
 	}
 
+	@Test
+	public void testConvertFutureToPastMeeting() {
+		testManager.addNewContact("Rambo", "hello Rambo"); // 1st contact therefore Id = 1
+		Set<Contact> testContacts = testManager.getContacts(1);
+		int id = testManager.addFutureMeeting(testContacts, date); // 1st meeting therefore Id = 1
+		
+		((ContactManagerImpl) testManager).checkForMeetingHeld();
+		PastMeeting meeting = testManager.getPastMeeting(1);
+		assertEquals(meeting.getContacts(), testContacts);
+	}
+
 	
 }
