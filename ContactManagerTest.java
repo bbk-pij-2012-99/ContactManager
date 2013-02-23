@@ -9,7 +9,6 @@ import java.util.Iterator;
 public class ContactManagerTest {
 
 	private ContactManager testManager;
-	private Contact contact;
 	private Set<Contact> contacts;
 	private Calendar date;
 	private Calendar pastDate;
@@ -17,9 +16,7 @@ public class ContactManagerTest {
 	@Before
 	public void buildUp() {
 		testManager = new ContactManagerImpl();
-		contact = new ContactImpl("Jane", 1);
 		contacts = new HashSet<>();
-		contacts.add(contact);
 		date = Calendar.getInstance();
 		date.set(2013, 4, 1, 12, 30);
 		pastDate = Calendar.getInstance();

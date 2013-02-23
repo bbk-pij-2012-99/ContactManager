@@ -4,10 +4,15 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.beans.XMLEncoder;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 /**
 * A class to manage your contacts and meetings.
 */
 public class ContactManagerImpl implements ContactManager {
+	private static final String FILENAME = "./contacts.txt"; 
 	private Set<Contact> allContacts;
 	private List<Meeting> allMeetings;
 	private int contactCount;
@@ -410,6 +415,14 @@ public class ContactManagerImpl implements ContactManager {
 	* closed and when/if the user requests it.
 	*/
 	public void flush(){
+
+		try(XMLEncoder objectOut = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(FILENAME)))) {
+			objectOut.writeObject(allMeetings);
+			objectOut.writeObject(allContacts);		
+		}
+		catch(IOException e) {
+			System.err.println("Error in writing to file: " + e);
+		}
 
 	}
 }

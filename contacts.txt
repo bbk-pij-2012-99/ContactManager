@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.7.0_07" class="java.beans.XMLDecoder">
+ <object class="java.util.ArrayList">
+  <void method="add">
+   <object class="PastMeetingImpl"/>
+  </void>
+  <void method="add">
+   <object class="FutureMeetingImpl"/>
+  </void>
+ </object>
+ <object class="java.util.HashSet">
+  <void method="add">
+   <object class="ContactImpl"/>
+  </void>
+  <void method="add">
+   <object class="ContactImpl"/>
+  </void>
+ </object>
+</java>

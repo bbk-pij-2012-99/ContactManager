@@ -17,6 +17,10 @@ public class MeetingImpl implements Meeting {
 		this.contacts = contacts;
 	}
 
+	public MeetingImpl() {
+		
+	}
+
 	/**
 	* Returns the id of the meeting.
 	*
