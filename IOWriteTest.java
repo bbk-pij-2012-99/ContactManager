@@ -10,7 +10,9 @@ import java.io.FileNotFoundException;
 import java.io.File;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
-import java.beans.XMLDecoder;
+import java.io.ObjectInputStream;
+import java.io.IOException;
+import java.util.Iterator;
 
 public class IOWriteTest {
 	
@@ -42,26 +44,36 @@ public class IOWriteTest {
 	}
 
 	@Test
-	public void testFlush() throws FileNotFoundException {
+	public void testFlush() throws ClassNotFoundException, FileNotFoundException {
 		testManager.flush();
 
 		String filename = "./contacts.txt";
 		File file = new File(filename);
+		List<Meeting> outputMeetings = null;
+		Set<Contact> outputContacts = null;
 
-		XMLDecoder objectIn = new XMLDecoder(new BufferedInputStream(new FileInputStream(file)));
-		List<Meeting> outputMeetings = (ArrayList<Meeting>) objectIn.readObject();
-		Set<Contact> outputContacts = (HashSet<Contact>) objectIn.readObject();
-		objectIn.close();
+
+		try(ObjectInputStream objectIn = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)));) {
+			outputMeetings = (ArrayList<Meeting>) objectIn.readObject();
+			outputContacts = (HashSet<Contact>) objectIn.readObject();		
+		}
+		catch(IOException e) {
+
+		}
 
 		assertEquals(outputMeetings.size(),2);
+		assertEquals(outputContacts.size(), 2);
 
-		// assertEquals(outputManager.getContacts(1, 2), testContacts1);
-		// assertEquals(outputManager.getFutureMeeting(1).getDate(), futureDate);
-		// assertEquals(outputManager.getPastMeeting(2).getDate(), pastDate);
-		// Set<Contact> outputContacts = outputManager.getContacts(1);
-		// Iterator<Contact> iter = outputContacts.iterator();
-		// Contact outputContact = iter.next();
-		// assertEquals(outputContact.getNotes(), "\nChess player");
+		Iterator<Contact> iterRead = outputContacts.iterator();
+		Contact readContact1 = iterRead.next();
+		Contact readContact2 = iterRead.next();
+		assertTrue(readContact1.getName().equals("Gary") || readContact1.getName().equals("Sarah smile"));
+		assertTrue(readContact2.getName().equals("Gary") || readContact2.getName().equals("Sarah smile"));
+
+		assertEquals(outputMeetings.get(0).getDate(), pastDate);
+		assertEquals(outputMeetings.get(1).getDate(), futureDate);
+		assertEquals(outputMeetings.get(0).getId(), 2);
+		assertEquals(outputMeetings.get(1).getId(), 1);
 	}
 
 }

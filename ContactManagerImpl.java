@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.beans.XMLEncoder;
+import java.io.ObjectOutputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -416,7 +416,7 @@ public class ContactManagerImpl implements ContactManager {
 	*/
 	public void flush(){
 
-		try(XMLEncoder objectOut = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(FILENAME)))) {
+		try(ObjectOutputStream objectOut = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(FILENAME)))) {
 			objectOut.writeObject(allMeetings);
 			objectOut.writeObject(allContacts);		
 		}
