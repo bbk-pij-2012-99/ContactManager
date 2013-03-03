@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.io.ObjectOutputStream;
-import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.BufferedInputStream;
+import java.io.ObjectInputStream;
 import java.io.FileOutputStream;
+import java.io.BufferedOutputStream;
+import java.io.ObjectOutputStream;
 import java.io.IOException;
 /**
 * A class to manage your contacts and meetings.
@@ -19,8 +23,19 @@ public class ContactManagerImpl implements ContactManager {
 	private int meetingCount;
 
 	public ContactManagerImpl() {
-		allContacts = new HashSet<>(); // Will be read in from file
-		allMeetings = new ArrayList<>(); // Will be read in from file
+		if (new File(FILENAME).exists()) {
+			try(ObjectInputStream objectIn = new ObjectInputStream(new BufferedInputStream(new FileInputStream(FILENAME)))) {
+				allMeetings = (List<Meeting>) objectIn.readObject();
+				allContacts = (Set<Contact>) objectIn.readObject();
+			}
+			catch(ClassNotFoundException | IOException e) {
+				System.err.println("Error in reading from file: " + e);
+			}
+		}
+		else {
+			allMeetings = new ArrayList<>();
+			allContacts = new HashSet<>();
+		}
 
 		/**
 		* Assuming nothing is deleted from the database, size of lists are used to

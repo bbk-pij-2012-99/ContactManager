@@ -21,12 +21,22 @@ public class IOReadTest {
 		pastDate = Calendar.getInstance();
 		pastDate.set(2011, 1, 1, 10, 30);
 
-		assertEquals(testManager.getPastMeeting(2).getDate(), pastDate);
-		assertEquals(testManager.getFutureMeeting(1).getDate(), futureDate);
+		Calendar outputDate = testManager.getPastMeeting(2).getDate();
+		assertEquals(outputDate.YEAR, pastDate.YEAR);
+		assertEquals(outputDate.DAY_OF_YEAR, pastDate.DAY_OF_YEAR);
+		assertEquals(outputDate.HOUR_OF_DAY, pastDate.HOUR_OF_DAY);
+		assertEquals(outputDate.MINUTE, pastDate.MINUTE);
+
+		outputDate = testManager.getFutureMeeting(1).getDate();
+		assertEquals(outputDate.YEAR, futureDate.YEAR);
+		assertEquals(outputDate.DAY_OF_YEAR, futureDate.DAY_OF_YEAR);
+		assertEquals(outputDate.HOUR_OF_DAY, futureDate.HOUR_OF_DAY);
+		assertEquals(outputDate.MINUTE, futureDate.MINUTE);
 
 		Set<Contact> outputContact = testManager.getContacts(1);
 		Iterator<Contact> iter = outputContact.iterator();
-		assertEquals(iter.next().getNotes(), "Chess player");
+		String outputNotes = iter.next().getNotes(); 
+		assertEquals(outputNotes, "\nChess player");
 
 		outputContact = testManager.getContacts(2);
 		iter = outputContact.iterator();
