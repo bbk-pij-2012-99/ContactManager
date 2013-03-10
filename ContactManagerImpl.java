@@ -36,6 +36,7 @@ public class ContactManagerImpl implements ContactManager {
 			}
 		}
 		else {
+			System.out.println("STARTED NEW");
 			allMeetings = new ArrayList<>();
 			allContacts = new HashSet<>();
 		}
@@ -232,7 +233,7 @@ public class ContactManagerImpl implements ContactManager {
 	*/
 	private boolean compareDates(Calendar date1, Calendar date2) {
 
-		if (date1.YEAR == date2.YEAR && date1.DAY_OF_YEAR == date2.DAY_OF_YEAR) {
+		if (date1.get(date1.YEAR) == date2.get(date2.YEAR) && date1.get(date1.DAY_OF_YEAR) == date2.get(date2.DAY_OF_YEAR)) {
 			return true;
 		}
 		return false;
@@ -416,6 +417,8 @@ public class ContactManagerImpl implements ContactManager {
 
 		Set<Contact> contacts = new HashSet<>();
 		for (Contact c : allContacts) {
+			System.out.println(c.getName());
+			System.out.println(c.getId());
 			if(c.getName().contains(name)) {
 				contacts.add(c);
 			}
