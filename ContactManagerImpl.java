@@ -19,8 +19,6 @@ public class ContactManagerImpl implements ContactManager {
 	private final String FILENAME; 
 	private Set<Contact> allContacts;
 	private List<Meeting> allMeetings;
-	private int contactCount;
-	private int meetingCount;
 
 	public ContactManagerImpl(String filename) {
 		FILENAME = filename;
@@ -38,13 +36,6 @@ public class ContactManagerImpl implements ContactManager {
 			allMeetings = new ArrayList<>();
 			allContacts = new HashSet<>();
 		}
-
-		/**
-		* Assuming nothing is deleted from the database, size of lists are used to
-		* generate unique ID for contacts and meetings
-		*/
-		contactCount = allContacts.size();
-		meetingCount = allMeetings.size();
 	}
 	/**
 	* Cast objects read in by ObjectInputStream
@@ -55,6 +46,7 @@ public class ContactManagerImpl implements ContactManager {
 	*/
 	@SuppressWarnings("unchecked")
 	private static <T> T castReadObject(Object obj) {
+  		
   		return (T) obj;
 	}
 	/**
@@ -63,6 +55,7 @@ public class ContactManagerImpl implements ContactManager {
 	* @return the ID for a new contact
 	*/
 	private int generateContactId() {
+
 		return allContacts.size() + 1;
 	}
 	/**
@@ -71,6 +64,7 @@ public class ContactManagerImpl implements ContactManager {
 	* @return the ID for a new meeting
 	*/
 	private int generateMeetingId() {
+		
 		return allMeetings.size() + 1;
 	}
 	/**
@@ -185,7 +179,6 @@ public class ContactManagerImpl implements ContactManager {
 		}
 
 		return contactMeetings;
-
 	}
 	/**
 	* Returns list with new meeting inserted in the first index at which the meeting precedes
@@ -215,8 +208,7 @@ public class ContactManagerImpl implements ContactManager {
 		}
 
 		list.add(newMeeting);
-		return list;
-			
+		return list;		
 	}
 	/**
 	* Returns the list of meetings that are scheduled for, or that took
@@ -240,7 +232,6 @@ public class ContactManagerImpl implements ContactManager {
 		}
 
 		return dateMeetings;
-
 	}
 	/**
 	* Returns true if the calendars represent the same date and false otherwise
@@ -440,7 +431,6 @@ public class ContactManagerImpl implements ContactManager {
 				}
 			}
 		}
-
 	}
 	/**
 	* Save all data to disk.
@@ -457,6 +447,5 @@ public class ContactManagerImpl implements ContactManager {
 		catch(IOException e) {
 			System.err.println("Error in writing to file: " + e);
 		}
-
 	}
 }
