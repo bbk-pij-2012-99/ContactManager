@@ -25,8 +25,11 @@ public class ContactManagerImpl implements ContactManager {
 	public ContactManagerImpl() {
 		if (new File(FILENAME).exists()) {
 			try(ObjectInputStream objectIn = new ObjectInputStream(new BufferedInputStream(new FileInputStream(FILENAME)))) {
-				allMeetings = (List<Meeting>) objectIn.readObject();
-				allContacts = (Set<Contact>) objectIn.readObject();
+				// allMeetings = (List<Meeting>) objectIn.readObject();
+				// allContacts = (Set<Contact>) objectIn.readObject();
+				allMeetings = castReadObject(objectIn.readObject());
+				allContacts = castReadObject(objectIn.readObject());
+				checkForMeetingHeld();
 			}
 			catch(ClassNotFoundException | IOException e) {
 				System.err.println("Error in reading from file: " + e);
@@ -43,6 +46,11 @@ public class ContactManagerImpl implements ContactManager {
 		*/
 		contactCount = allContacts.size();
 		meetingCount = allMeetings.size();
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> T castReadObject(Object obj) {
+  		return (T) obj;
 	}
 
 
@@ -242,7 +250,7 @@ public class ContactManagerImpl implements ContactManager {
 	*/
 	public List<PastMeeting> getPastMeetingList(Contact contact){
 		
-		// Checks contact exists	
+		//Checks contact exists	
 		getContacts(contact.getId());
 
 		List<PastMeeting> contactMeetings = new ArrayList<>();
@@ -256,10 +264,25 @@ public class ContactManagerImpl implements ContactManager {
 		}
 	
 		return contactMeetings;
+
+		//return getMeetingList(contact,PastMeeting);
 	}
 
-	// private List<? extends Meeting> getMeetingList(Contact contact)  {
+	// private List<Meeting> getMeetingList(Contact contact,Class meetingType)  {
+	// 	// Checks contact exists	
+	// 	getContacts(contact.getId());
 
+	// 	List<Meeting> contactMeetings = new ArrayList<>();
+
+	// 	for (Meeting meeting : allMeetings) {
+	// 		if (meeting instanceof meetingType) {
+	// 			if (meeting.getContacts().contains(contact)) {
+	// 				contactMeetings.add(meeting);
+	// 			}	
+	// 		}
+	// 	}
+	
+	// 	return contactMeetings;	
 	// }
 
 	/**
@@ -404,10 +427,9 @@ public class ContactManagerImpl implements ContactManager {
 	* Meetings retain the same Id.
 	*
 	*/
-	public void checkForMeetingHeld() {
+	private void checkForMeetingHeld() {
 
 		Calendar present = Calendar.getInstance();
-		present.set(2013, 5, 1, 10, 10); // Set in future for testing
 
 		for (int i = 0; i < allMeetings.size(); i++) {
 			Meeting meeting = allMeetings.get(i);
