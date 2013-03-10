@@ -36,7 +36,6 @@ public class ContactManagerImpl implements ContactManager {
 			}
 		}
 		else {
-			System.out.println("STARTED NEW");
 			allMeetings = new ArrayList<>();
 			allContacts = new HashSet<>();
 		}
@@ -417,8 +416,6 @@ public class ContactManagerImpl implements ContactManager {
 
 		Set<Contact> contacts = new HashSet<>();
 		for (Contact c : allContacts) {
-			System.out.println(c.getName());
-			System.out.println(c.getId());
 			if(c.getName().contains(name)) {
 				contacts.add(c);
 			}

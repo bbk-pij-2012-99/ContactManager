@@ -1,4 +1,15 @@
+import org.junit.*;
+import static org.junit.Assert.*;
 import java.util.Calendar;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+
+/**
+* Test complete Contact Manager.
+* Assumes no records exist at start of tests - i.e. contacts.txt does not exist
+*/
 
 public class ContactManagerAppTest {
 
@@ -193,6 +204,7 @@ public class ContactManagerAppTest {
 	@Test
 	public void testAddPastMeetingNullDate() {
 		Calendar nullDate = null;
+		Set<Contact> contacts = testManager.getContacts(1);
 		try {
 			testManager.addNewPastMeeting(contacts, nullDate, "Some notes.");
 			fail();
@@ -205,6 +217,7 @@ public class ContactManagerAppTest {
 	@Test
 	public void testAddPastMeetingNullNotes() {
 		String notes = null;
+		Set<Contact> contacts = testManager.getContacts(1);
 		try {
 			testManager.addNewPastMeeting(contacts, pastDate, notes);
 			fail();
@@ -288,7 +301,7 @@ public class ContactManagerAppTest {
 	public void testAddMeetingNotes() {
 		testManager.addMeetingNotes(3, "More notes.");
 		String output = testManager.getPastMeeting(3).getNotes();
-		assertEquals("\nMore notes.", output);
+		assertEquals("\nNotes.\nMore notes.", output);
 	}
 
 	@Test
@@ -383,8 +396,8 @@ public class ContactManagerAppTest {
 
 		List<Meeting> outputList = testManager.getFutureMeetingList(date);
 		assertEquals(outputList.get(0), meeting2);
-		assertEquals(outputList.get(1), meeting1);
-		assertEquals(outputList.size(), 2);
+		assertEquals(outputList.get(4), meeting1);
+		assertEquals(outputList.size(), 5);
 
 		Calendar shortDate = Calendar.getInstance();
 		shortDate.set(2013, 4, 1);
@@ -397,10 +410,10 @@ public class ContactManagerAppTest {
 
 		Set<Contact> testContacts = testManager.getContacts(10);
 
-		Meeting pastMeeting = testManager.getMeeting(3);
+		Meeting pastMeeting = testManager.getMeeting(2);
 		List<Meeting> pastMeetingList = testManager.getFutureMeetingList(pastDate);
 		assertEquals(pastMeetingList.get(0), pastMeeting);
-		assertEquals(pastMeetingList.size(), 1);
+		assertEquals(pastMeetingList.size(), 2);
 	}
 
 
