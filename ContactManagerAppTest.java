@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.io.File;
 
 /**
 * Test complete Contact Manager.
@@ -19,7 +20,7 @@ public class ContactManagerAppTest {
 
 	@Before
 	public void buildUp() {
-		testManager = new ContactManagerImpl();
+		testManager = new ContactManagerImpl("./contacts.txt");
 		date = Calendar.getInstance();
 		date.set(2013, 4, 1, 12, 30);
 		pastDate = Calendar.getInstance();
@@ -30,6 +31,12 @@ public class ContactManagerAppTest {
 	public void afterTest() {
 		testManager.flush();
 		testManager = null;
+	}
+
+	@AfterClass
+	public static void afterAllTests() {
+		File file = new File("./contacts.txt");
+		file.delete();
 	}
 
 	@Test

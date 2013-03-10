@@ -16,17 +16,16 @@ import java.io.IOException;
 * A class to manage your contacts and meetings.
 */
 public class ContactManagerImpl implements ContactManager {
-	private static final String FILENAME = "./contacts.txt"; 
+	private final String FILENAME; 
 	private Set<Contact> allContacts;
 	private List<Meeting> allMeetings;
 	private int contactCount;
 	private int meetingCount;
 
-	public ContactManagerImpl() {
+	public ContactManagerImpl(String filename) {
+		FILENAME = filename;
 		if (new File(FILENAME).exists()) {
 			try(ObjectInputStream objectIn = new ObjectInputStream(new BufferedInputStream(new FileInputStream(FILENAME)))) {
-				// allMeetings = (List<Meeting>) objectIn.readObject();
-				// allContacts = (Set<Contact>) objectIn.readObject();
 				allMeetings = castReadObject(objectIn.readObject());
 				allContacts = castReadObject(objectIn.readObject());
 				checkForMeetingHeld();
@@ -47,13 +46,33 @@ public class ContactManagerImpl implements ContactManager {
 		contactCount = allContacts.size();
 		meetingCount = allMeetings.size();
 	}
-
+	/**
+	* Cast objects read in by ObjectInputStream
+	* Suppresses unchecked cast warning
+	*
+	* @param obj the object read from file
+	* @return the object cast to appropriate type
+	*/
 	@SuppressWarnings("unchecked")
 	private static <T> T castReadObject(Object obj) {
   		return (T) obj;
 	}
-
-
+	/**
+	* Generate a unique ID for a new contact, based on the number of existing contacts
+	*
+	* @return the ID for a new contact
+	*/
+	private int generateContactId() {
+		return allContacts.size() + 1;
+	}
+	/**
+	* Generate a unique ID for a new meeting, based on the number of existing meetings
+	*
+	* @return the ID for a new meeting
+	*/
+	private int generateMeetingId() {
+		return allMeetings.size() + 1;
+	}
 	/**
 	* Add a new meeting to be held in the future.
 	*
@@ -76,7 +95,7 @@ public class ContactManagerImpl implements ContactManager {
 			}
 		}
 
-		int id = ++meetingCount;
+		int id = generateMeetingId();
 		Meeting meeting = new FutureMeetingImpl(id, date, contacts);
 		allMeetings = sortList(allMeetings, meeting);
 		return id;
@@ -250,7 +269,7 @@ public class ContactManagerImpl implements ContactManager {
 	*/
 	public List<PastMeeting> getPastMeetingList(Contact contact){
 		
-		//Checks contact exists	
+		// Checks contact exists	
 		getContacts(contact.getId());
 
 		List<PastMeeting> contactMeetings = new ArrayList<>();
@@ -262,29 +281,8 @@ public class ContactManagerImpl implements ContactManager {
 				}	
 			}
 		}
-	
 		return contactMeetings;
-
-		//return getMeetingList(contact,PastMeeting);
 	}
-
-	// private List<Meeting> getMeetingList(Contact contact,Class meetingType)  {
-	// 	// Checks contact exists	
-	// 	getContacts(contact.getId());
-
-	// 	List<Meeting> contactMeetings = new ArrayList<>();
-
-	// 	for (Meeting meeting : allMeetings) {
-	// 		if (meeting instanceof meetingType) {
-	// 			if (meeting.getContacts().contains(contact)) {
-	// 				contactMeetings.add(meeting);
-	// 			}	
-	// 		}
-	// 	}
-	
-	// 	return contactMeetings;	
-	// }
-
 	/**
 	* Create a new record for a meeting that took place in the past.
 	*
@@ -317,7 +315,7 @@ public class ContactManagerImpl implements ContactManager {
 			}
 		}
 
-		int id = ++meetingCount;
+		int id = generateMeetingId();
 		Meeting meeting = new PastMeetingImpl(id, date, contacts);
 		allMeetings = sortList(allMeetings, meeting);
 		addMeetingNotes(id, text);
@@ -370,8 +368,7 @@ public class ContactManagerImpl implements ContactManager {
 			throw new NullPointerException("No notes given.");
 		}
 
-		int id = ++contactCount;
-		Contact contact = new ContactImpl(name, id);
+		Contact contact = new ContactImpl(name, generateContactId());
 		contact.addNotes(notes);
 		allContacts.add(contact);
 	}
