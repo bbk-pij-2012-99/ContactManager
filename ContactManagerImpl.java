@@ -36,6 +36,7 @@ public class ContactManagerImpl implements ContactManager {
 			allContacts = new HashSet<>();
 		}
 	}
+
 	/**
 	* Cast objects read in by ObjectInputStream
 	* Suppresses unchecked cast warning
@@ -48,6 +49,7 @@ public class ContactManagerImpl implements ContactManager {
   		
   		return (T) obj;
 	}
+	
 	/**
 	* Generate a unique ID for a new contact, based on the number of existing contacts
 	*
@@ -57,6 +59,7 @@ public class ContactManagerImpl implements ContactManager {
 
 		return allContacts.size() + 1;
 	}
+	
 	/**
 	* Generate a unique ID for a new meeting, based on the number of existing meetings
 	*
@@ -66,6 +69,7 @@ public class ContactManagerImpl implements ContactManager {
 		
 		return allMeetings.size() + 1;
 	}
+	
 	/** 
 	* Return TRUE if meeting occurs in the past.
 	*
@@ -76,36 +80,7 @@ public class ContactManagerImpl implements ContactManager {
 		Calendar currentDate = Calendar.getInstance();
 		return meeting.getDate().before(currentDate);
 	}
-	// /**
-	// * Returns list with new meeting inserted in the first index at which the meeting precedes
-	// * the meeting at that index. If the meeting is already in the list it is not added.
-	// *
-	// * Assuming list is already sorted chronologically, earliest to latest occurence, the new
-	// * meeting will be inserted to maintain the sorting.
-	// *
-	// * @param list a chronologically sorted list of meetings
-	// * @param newMeeting the meeting to be inserted into the list
-	// * @return the list with the new meeting inserted chronologically
-	// */
-	// private List<Meeting> sortList(List<Meeting> list, Meeting newMeeting) {
-
-	// 	if (list.contains(newMeeting)) {
-	// 		return list;
-	// 	}
-
-	// 	Calendar newDate = newMeeting.getDate();
-
-	// 	for (int i = 0; i < list.size(); i++) {
-	// 		Calendar date = list.get(i).getDate();
-	// 		if(newDate.before(date)) {
-	// 			list.add(i, newMeeting);
-	// 			return list;
-	// 		}
-	// 	}
-
-	// 	list.add(newMeeting);
-	// 	return list;		
-	// }
+	
 	/**
 	* Returns true if the calendars represent the same date and false otherwise
 	*
@@ -120,6 +95,7 @@ public class ContactManagerImpl implements ContactManager {
 		}
 		return false;
 	}
+	
 	/**
 	* Create a new contact with the specified name and notes.
 	*
@@ -140,6 +116,7 @@ public class ContactManagerImpl implements ContactManager {
 		contact.addNotes(notes);
 		allContacts.add(contact);
 	}
+	
 	/**
 	* Returns a list containing the contacts that correspond to the IDs.
 	*
@@ -166,6 +143,7 @@ public class ContactManagerImpl implements ContactManager {
 		
 		return contacts;
 	}
+	
 	/**
 	* Returns a list with the contacts whose name contains that string.
 	*
@@ -187,6 +165,7 @@ public class ContactManagerImpl implements ContactManager {
 		}
 		return contacts;
 	}
+	
 	/**
 	* Add a new meeting to be held in the future.
 	*
@@ -212,9 +191,9 @@ public class ContactManagerImpl implements ContactManager {
 		int id = generateMeetingId();
 		Meeting meeting = new MeetingImpl(id, date, contacts);
 		allMeetings.add(meeting);
-		// allMeetings = sortList(allMeetings, meeting);
 		return id;
 	}
+	
 	/**
 	* Create a new record for a meeting that took place in the past.
 	*
@@ -248,11 +227,10 @@ public class ContactManagerImpl implements ContactManager {
 		}
 
 		int id = generateMeetingId();
-		Meeting meeting = new MeetingImpl(id, date, contacts);
+		Meeting meeting = new MeetingImpl(id, date, contacts, text);
 		allMeetings.add(meeting);
-		// allMeetings = sortList(allMeetings, meeting);
-		addMeetingNotes(id, text);
 	}
+	
 	/**
 	* Add notes to a meeting.
 	*
@@ -285,6 +263,7 @@ public class ContactManagerImpl implements ContactManager {
 
 		((MeetingImpl) meeting).addNotes(text);
 	}
+	
 	/**
 	* Returns the meeting with the requested ID, or null if it there is none.
 	*
@@ -301,6 +280,7 @@ public class ContactManagerImpl implements ContactManager {
 		
 		return null;
 	}
+	
 	/**
 	* Returns the PAST meeting with the requested ID, or null if it there is none.
 	*
@@ -322,6 +302,7 @@ public class ContactManagerImpl implements ContactManager {
 			throw new IllegalArgumentException("Meeting occurs in the future.");
 		}
 	}
+	
 	/**
 	* Returns the FUTURE meeting with the requested ID, or null if there is none.
 	*
@@ -340,9 +321,10 @@ public class ContactManagerImpl implements ContactManager {
 			throw new IllegalArgumentException("Meeting occurs in the past.");
 		}
 		else {
-			return  (FutureMeeting) meeting;
+			return (FutureMeeting) meeting;
 		}
 	}
+	
 	/**
 	* Returns the list of future meetings scheduled with this contact.
 	*
@@ -357,25 +339,19 @@ public class ContactManagerImpl implements ContactManager {
 	public List<Meeting> getFutureMeetingList(Contact contact){
 	
 		// Checks contact exists	
-		// getContacts(contact.getId());
-
-		// List<Meeting> contactMeetings = new ArrayList<>();
-
-		// for (Meeting meeting : allMeetings) {
-		// 	if (meeting.getContacts().contains(contact) && !isPastMeeting(meeting)) {
-		// 		contactMeetings.add(meeting);	
-		// 	}
-		// }
+		getContacts(contact.getId());
 
 		List<Meeting> contactMeetings = new ArrayList<>();
-		List<Meeting> allContactMeetings = getMeetingList(contact);
-		for (Meeting meeting : allContactMeetings) {
-			if(!isPastMeeting(meeting)) {
-				contactMeetings.add(meeting);
+
+		for (Meeting meeting : allMeetings) {
+			if (meeting.getContacts().contains(contact) && !isPastMeeting(meeting)) {
+				contactMeetings.add(meeting);	
 			}
 		}
+
 		return contactMeetings;
 	}
+	
 	/**
 	* Returns the list of meetings that are scheduled for, or that took
 	* place on, the specified date
@@ -399,6 +375,7 @@ public class ContactManagerImpl implements ContactManager {
 
 		return dateMeetings;
 	}
+	
 	/**
 	* Returns the list of past meetings in which this contact has participated.
 	*
@@ -413,43 +390,19 @@ public class ContactManagerImpl implements ContactManager {
 	public List<PastMeeting> getPastMeetingList(Contact contact){
 		
 		// Checks contact exists	
-		// getContacts(contact.getId());
-
-		// List<PastMeeting> contactMeetings = new ArrayList<>();
-
-		// for (Meeting meeting : allMeetings) {
-		// 		if (meeting.getContacts().contains(contact) && isPastMeeting(meeting)) {
-		// 			contactMeetings.add((PastMeeting) meeting);
-		// 		}	
-		// }
-		
-		// return contactMeetings;
-
-		List<PastMeeting> contactMeetings = new ArrayList<>();
-		List<Meeting> allContactMeetings = getMeetingList(contact);
-		for (Meeting meeting : allContactMeetings) {
-			if(isPastMeeting(meeting)) {
-				contactMeetings.add((PastMeeting) meeting);
-			}
-		}
-		return contactMeetings;
-	}
-	private List<Meeting> getMeetingList(Contact contact) {
-		
-		// Checks contact exists	
 		getContacts(contact.getId());
 
-		List<Meeting> contactMeetings = new ArrayList<>();
+		List<PastMeeting> contactMeetings = new ArrayList<>();
 
 		for (Meeting meeting : allMeetings) {
-				if (meeting.getContacts().contains(contact)) {
-					contactMeetings.add(meeting);
+				if (meeting.getContacts().contains(contact) && isPastMeeting(meeting)) {
+					contactMeetings.add((PastMeeting) meeting);
 				}	
 		}
 		
-		return contactMeetings;		
-
+		return contactMeetings;
 	}
+	
 	/**
 	* Save all data to disk.
 	*

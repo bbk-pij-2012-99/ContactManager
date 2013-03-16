@@ -5,7 +5,8 @@ import java.io.Serializable;
 /**
 * A class to represent meetings
 *
-* Meetings have unique IDs, scheduled date and a list of participating contacts
+* Meetings have unique IDs, scheduled date and a list of participating contacts. Past meetings
+* may have notes.
 */
 public class MeetingImpl implements Meeting, PastMeeting, FutureMeeting, Serializable {
 	private int id;
@@ -17,6 +18,11 @@ public class MeetingImpl implements Meeting, PastMeeting, FutureMeeting, Seriali
 		this.id = id;
 		this.date = date;
 		this.contacts = contacts;
+	}
+
+	public MeetingImpl(int id, Calendar date, Set<Contact> contacts, String notes) {
+		this(id, date, contacts);
+		this.notes = notes;
 	}
 
 	public MeetingImpl() {
@@ -31,6 +37,7 @@ public class MeetingImpl implements Meeting, PastMeeting, FutureMeeting, Seriali
 	public int getId(){
 		return id;
 	}
+	
 	/**
 	* Return the date of the meeting.
 	*
@@ -39,6 +46,7 @@ public class MeetingImpl implements Meeting, PastMeeting, FutureMeeting, Seriali
 	public Calendar getDate(){
 		return date;
 	}
+	
 	/**
 	* Return the details of people that attended the meeting.
 	*
@@ -51,6 +59,7 @@ public class MeetingImpl implements Meeting, PastMeeting, FutureMeeting, Seriali
 	public Set<Contact> getContacts(){
 		return contacts;
 	}
+	
 	/**
 	* Returns the notes from the meeting if meeting occurred in the past.
 	*
@@ -59,8 +68,9 @@ public class MeetingImpl implements Meeting, PastMeeting, FutureMeeting, Seriali
 	* @return the notes from the meeting.
 	*/
 	public String getNotes(){
-		return notes;
+		return notes == null ? "" : notes;
 	}
+	
 	/**
 	* Adds notes to the meeting if meeting occurred in the past. If notes already exist, the new notes are appended.
 	*
@@ -68,11 +78,6 @@ public class MeetingImpl implements Meeting, PastMeeting, FutureMeeting, Seriali
 	* @throws NullPointerException if the notes are null.
 	*/
 	public void addNotes(String text) {
-		if (notes == null) {
-			notes = text;
-		}
-		else {
-			notes = notes + "\n" + text;	
-		}
+		notes = getNotes() + "\n" + text;
 	}
 }

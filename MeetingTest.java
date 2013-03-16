@@ -45,6 +45,6 @@ public class MeetingTest {
 	public void testPastMeeting() {
 		Calendar outputDate = testMeeting.getDate();
 		String notes = ((PastMeeting) testMeeting).getNotes();
-		assertEquals(null, notes);
+		assertEquals("", notes);
 	}
 }
