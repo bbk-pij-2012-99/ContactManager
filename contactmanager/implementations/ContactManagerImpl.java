@@ -1,3 +1,6 @@
+package contactmanager.implementations;
+
+import contactmanager.interfaces.*;
 import java.util.Calendar;
 import java.util.List;
 import java.util.ArrayList;

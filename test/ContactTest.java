@@ -1,3 +1,8 @@
+package test;
+
+import contactmanager.interfaces.*;
+import contactmanager.implementations.*;
+
 import org.junit.*;
 import static org.junit.Assert.*;
 

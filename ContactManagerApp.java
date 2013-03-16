@@ -1,5 +1,5 @@
-import java.util.Iterator;
-import java.util.Set;
+import contactmanager.implementations.ContactManagerImpl;
+import contactmanager.interfaces.ContactManager;
 
 public class ContactManagerApp {
 
@@ -11,7 +11,7 @@ public class ContactManagerApp {
 		ContactManager manager = new ContactManagerImpl("./test-contacts.txt");
 
 		// Add contacts and meetings....
-		
+
 		manager.flush();
 	}
 
