@@ -27,7 +27,6 @@ public class MeetingTest {
 		testMeeting = new MeetingImpl(1, date, contacts);
 	}
 
-
 	@Test
 	public void testIdAccessor() {
 		int id = testMeeting.getId();

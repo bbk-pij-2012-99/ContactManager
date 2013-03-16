@@ -8,7 +8,7 @@ public class ContactManagerApp {
 	}
 
 	private static void launch() {
-		ContactManager manager = new ContactManagerImpl("./test-contacts.txt");
+		ContactManager manager = new ContactManagerImpl("./contacts.txt");
 
 		// Add contacts and meetings....
 

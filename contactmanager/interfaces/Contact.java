@@ -1,3 +1,5 @@
+package contactmanager.interfaces;
+
 /**
 * A contact is a person we are making business with or may do in the future.
 *
@@ -5,18 +7,21 @@
 * not), and notes that the user may want to save about them.
 */
 public interface Contact {
+
 	/**
 	* Returns the ID of the contact.
 	*
 	* @return the ID of the contact.
 	*/
 	int getId();
+
 	/**
 	* Returns the name of the contact.
 	*
 	* @return the name of the contact.
 	*/
 	String getName();
+
 	/**
 	* Returns our notes about the contact, if any.
 	*
@@ -26,6 +31,7 @@ public interface Contact {
 	* @return a string with notes about the contact, maybe empty.
 	*/
 	String getNotes();
+
 	/**
 	* Add notes about the contact.
 	*

@@ -1,6 +1,7 @@
 package contactmanager.implementations;
 
 import contactmanager.interfaces.*;
+
 import java.util.Calendar;
 import java.util.List;
 import java.util.ArrayList;
@@ -15,10 +16,12 @@ import java.io.FileOutputStream;
 import java.io.BufferedOutputStream;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
+
 /**
 * A class to manage your contacts and meetings.
 */
 public class ContactManagerImpl implements ContactManager {
+	
 	private final String filename; 
 	private Set<Contact> allContacts;
 	private List<Meeting> allMeetings;
@@ -53,7 +56,6 @@ public class ContactManagerImpl implements ContactManager {
 	*/
 	@SuppressWarnings("unchecked")
 	private static <T> T castReadObject(Object obj) {
-  		
   		return (T) obj;
 	}
 	
@@ -63,7 +65,6 @@ public class ContactManagerImpl implements ContactManager {
 	* @return the ID for a new contact
 	*/
 	private int generateContactId() {
-
 		return allContacts.size() + 1;
 	}
 	
@@ -73,7 +74,6 @@ public class ContactManagerImpl implements ContactManager {
 	* @return the ID for a new meeting
 	*/
 	private int generateMeetingId() {
-		
 		return allMeetings.size() + 1;
 	}
 	
@@ -96,10 +96,10 @@ public class ContactManagerImpl implements ContactManager {
 	* @return boolean logical of whether the dates are the same
 	*/
 	private boolean compareDates(Calendar date1, Calendar date2) {
-
 		if (date1.get(date1.YEAR) == date2.get(date2.YEAR) && date1.get(date1.DAY_OF_YEAR) == date2.get(date2.DAY_OF_YEAR)) {
 			return true;
 		}
+
 		return false;
 	}
 	
@@ -111,7 +111,6 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws NullPointerException if the name or the notes are null
 	*/
 	public void addNewContact(String name, String notes){
-
 		if(name == null) {
 			throw new NullPointerException("No name given.");
 		}
@@ -132,7 +131,6 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws IllegalArgumentException if any of the IDs does not correspond to a real contact
 	*/
 	public Set<Contact> getContacts(int... ids){
-
 		Set<Contact> contacts = new HashSet<>();
 		for (int i : ids) {
 			int exists = 0;
@@ -159,7 +157,6 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws NullPointerException if the parameter is null
 	*/
 	public Set<Contact> getContacts(String name){
-
 		if (name == null) {
 			throw new NullPointerException("No name given.");
 		}
@@ -170,6 +167,7 @@ public class ContactManagerImpl implements ContactManager {
 				contacts.add(c);
 			}
 		}
+
 		return contacts;
 	}
 	
@@ -183,7 +181,6 @@ public class ContactManagerImpl implements ContactManager {
 	* of if any contact is unknown / non-existent
 	*/
 	public int addFutureMeeting(Set<Contact> contacts, Calendar date){
-
 		Calendar currentDate = Calendar.getInstance();
 		if (date.before(currentDate)) {
 			throw new IllegalArgumentException("Meeting occurs in the past.");
@@ -212,7 +209,6 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws NullPointerException if any of the arguments is null
 	*/
 	public void addNewPastMeeting(Set<Contact> contacts, Calendar date, String text){
-
 		if (contacts == null) {
 			throw new NullPointerException("No contacts given.");
 		}
@@ -253,7 +249,6 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws NullPointerException if the notes are null
 	*/
 	public void addMeetingNotes(int id, String text){
-
 		if (text == null) {
 			throw new NullPointerException("No notes given.");
 		}
@@ -278,7 +273,6 @@ public class ContactManagerImpl implements ContactManager {
 	* @return the meeting with the requested ID, or null if it there is none.
 	*/
 	public Meeting getMeeting(int id){
-
 		for (Meeting meeting : allMeetings) {
 			if (meeting.getId() == id) {
 				return meeting;
@@ -296,7 +290,6 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws IllegalArgumentException if there is a meeting with that ID happening in the future
 	*/
 	public PastMeeting getPastMeeting(int id){
-
 		Meeting meeting = getMeeting(id);
 		if (meeting == null) {
 			return null;
@@ -318,7 +311,6 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws IllegalArgumentException if there is a meeting with that ID happening in the past
 	*/
 	public FutureMeeting getFutureMeeting(int id){
-		
 		Meeting meeting = getMeeting(id);
 		if (meeting == null) {
 			return null;
@@ -344,7 +336,6 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws IllegalArgumentException if the contact does not exist
 	*/
 	public List<Meeting> getFutureMeetingList(Contact contact){
-	
 		// Checks contact exists	
 		getContacts(contact.getId());
 
@@ -371,7 +362,6 @@ public class ContactManagerImpl implements ContactManager {
 	* @return the list of meetings
 	*/
 	public List<Meeting> getFutureMeetingList(Calendar date){
-
 		List<Meeting> dateMeetings = new ArrayList<>();
 
 		for (Meeting meeting : allMeetings) {
@@ -395,7 +385,6 @@ public class ContactManagerImpl implements ContactManager {
 	* @throws IllegalArgumentException if the contact does not exist
 	*/
 	public List<PastMeeting> getPastMeetingList(Contact contact){
-		
 		// Checks contact exists	
 		getContacts(contact.getId());
 
@@ -417,7 +406,6 @@ public class ContactManagerImpl implements ContactManager {
 	* closed and when/if the user requests it.
 	*/
 	public void flush(){
-
 		try(ObjectOutputStream objectOut = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(filename)))) {
 			objectOut.writeObject(allMeetings);
 			objectOut.writeObject(allContacts);		

@@ -2,6 +2,7 @@ package contactmanager.implementations;
 
 import contactmanager.interfaces.*;
 import java.io.Serializable;
+
 /**
 * A contact is a person we are making business with or may do in the future.
 *
@@ -9,10 +10,10 @@ import java.io.Serializable;
 * not), and notes that the user may want to save about them.
 */
 public class ContactImpl implements Contact, Serializable {
+	
 	private String name;
 	private int id;
 	private String notes;
-
 
 	public ContactImpl(String name, int id) {
 		this.name = name;
@@ -31,8 +32,8 @@ public class ContactImpl implements Contact, Serializable {
 	*/
 	public int getId(){
 		return id;
-
 	}
+
 	/**
 	* Returns the name of the contact.
 	*
@@ -40,8 +41,8 @@ public class ContactImpl implements Contact, Serializable {
 	*/
 	public String getName(){
 		return name;
-
 	}
+
 	/**
 	* Returns our notes about the contact, if any.
 	*
@@ -52,8 +53,8 @@ public class ContactImpl implements Contact, Serializable {
 	*/
 	public String getNotes(){
 		return notes;
-
 	}
+
 	/**
 	* Add notes about the contact.
 	*

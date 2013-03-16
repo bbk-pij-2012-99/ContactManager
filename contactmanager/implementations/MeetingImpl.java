@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Set;
 import java.util.HashSet;
 import java.io.Serializable;
+
 /**
 * A class to represent meetings
 *
@@ -12,6 +13,7 @@ import java.io.Serializable;
 * may have notes.
 */
 public class MeetingImpl implements Meeting, PastMeeting, FutureMeeting, Serializable {
+	
 	private int id;
 	private Calendar date;
 	private Set<Contact> contacts;

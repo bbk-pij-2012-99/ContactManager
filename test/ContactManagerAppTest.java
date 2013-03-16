@@ -16,7 +16,6 @@ import java.io.File;
 * Test complete Contact Manager.
 * Assumes no records exist at start of tests - i.e. contacts.txt does not exist
 */
-
 public class ContactManagerAppTest {
 
 	private ContactManager testManager;
@@ -46,7 +45,6 @@ public class ContactManagerAppTest {
 
 	@Test
 	public void testAddNewContactGetContactByName() {
-
 		testManager.addNewContact("Jed Richards", "Flash developer."); // 1st contact therefore Id = 1 
 		testManager.addNewContact("Sarah Small", "Princess."); // Id = 2
 		Set<Contact> output = testManager.getContacts("Jed");
@@ -54,7 +52,6 @@ public class ContactManagerAppTest {
 		for (Contact c : output) {
 			assertEquals(c.getId(), 1);	
 		}
-		
 	}
 
 	@Test
@@ -250,7 +247,6 @@ public class ContactManagerAppTest {
 		assertEquals(outputContacts, testContacts);
 	}
 
-
 	@Test
 	public void testGetMeeting() {
 		Set<Contact> testContacts = testManager.getContacts(4);
@@ -307,7 +303,6 @@ public class ContactManagerAppTest {
 		FutureMeeting futureMeeting = testManager.getFutureMeeting(10);	
 		assertEquals(futureMeeting, null);
 	}
-
 
 	@Test
 	public void testAddMeetingNotes() {
@@ -428,7 +423,6 @@ public class ContactManagerAppTest {
 		assertEquals(pastMeetingList.size(), 2);
 	}
 
-
 	@Test
 	public void testGetPastMeetingList() {
 		Calendar newDate = Calendar.getInstance();
@@ -453,7 +447,6 @@ public class ContactManagerAppTest {
 		assertEquals(outputList.get(1), meeting2);
 		assertEquals(outputList.size(), 2);
 	}
-
 
 	@Test
 	public void testGetPastMeetingListByEx() {

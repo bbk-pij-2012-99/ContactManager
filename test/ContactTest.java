@@ -15,7 +15,6 @@ public class ContactTest {
 		testContact = new ContactImpl("Jane Smith", 10);
 	}
 
-
 	@Test
 	public void testContactAccessors() {
 		int id = testContact.getId();
