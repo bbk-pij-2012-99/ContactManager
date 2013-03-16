@@ -16,14 +16,14 @@ import java.io.IOException;
 * A class to manage your contacts and meetings.
 */
 public class ContactManagerImpl implements ContactManager {
-	private final String FILENAME; 
+	private final String filename; 
 	private Set<Contact> allContacts;
 	private List<Meeting> allMeetings;
 
 	public ContactManagerImpl(String filename) {
-		FILENAME = filename;
-		if (new File(FILENAME).exists()) {
-			try(ObjectInputStream objectIn = new ObjectInputStream(new BufferedInputStream(new FileInputStream(FILENAME)))) {
+		this.filename = filename;
+		if (new File(filename).exists()) {
+			try(ObjectInputStream objectIn = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)))) {
 				allMeetings = castReadObject(objectIn.readObject());
 				allContacts = castReadObject(objectIn.readObject());
 				checkForMeetingHeld();
@@ -272,6 +272,7 @@ public class ContactManagerImpl implements ContactManager {
 				}	
 			}
 		}
+		
 		return contactMeetings;
 	}
 	/**
@@ -440,7 +441,7 @@ public class ContactManagerImpl implements ContactManager {
 	*/
 	public void flush(){
 
-		try(ObjectOutputStream objectOut = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(FILENAME)))) {
+		try(ObjectOutputStream objectOut = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(filename)))) {
 			objectOut.writeObject(allMeetings);
 			objectOut.writeObject(allContacts);		
 		}
