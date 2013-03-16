@@ -37,6 +37,10 @@ public class ContactManagerImpl implements ContactManager {
 		}
 	}
 
+	public ContactManagerImpl() {
+		this("./contacts.txt");
+	}
+
 	/**
 	* Cast objects read in by ObjectInputStream
 	* Suppresses unchecked cast warning
