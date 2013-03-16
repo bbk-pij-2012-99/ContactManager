@@ -7,10 +7,11 @@ import java.io.Serializable;
 *
 * Meetings have unique IDs, scheduled date and a list of participating contacts
 */
-public class MeetingImpl implements Meeting, Serializable {
-	protected int id;
-	protected Calendar date;
-	protected Set<Contact> contacts;
+public class MeetingImpl implements Meeting, PastMeeting, FutureMeeting, Serializable {
+	private int id;
+	private Calendar date;
+	private Set<Contact> contacts;
+	private String notes;
 
 	public MeetingImpl(int id, Calendar date, Set<Contact> contacts) {
 		this.id = id;
@@ -49,5 +50,25 @@ public class MeetingImpl implements Meeting, Serializable {
 	*/
 	public Set<Contact> getContacts(){
 		return contacts;
+	}
+	/**
+	* Returns the notes from the meeting if meeting occurred in the past.
+	*
+	* If there are no notes, the empty string is returned.
+	*
+	* @return the notes from the meeting.
+	*/
+	public String getNotes(){
+		return notes;
+	}
+
+	/**
+	* Adds notes to the meeting if meeting occurred in the past. If notes already exist, the new notes are appended.
+	*
+	* @param text messages to be added about the meeting.
+	* @throws NullPointerException if the notes are null.
+	*/
+	public void addNotes(String text) {
+		notes = notes + "\n" + text;
 	}
 }
