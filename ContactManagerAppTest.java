@@ -308,7 +308,7 @@ public class ContactManagerAppTest {
 	public void testAddMeetingNotes() {
 		testManager.addMeetingNotes(3, "More notes.");
 		String output = testManager.getPastMeeting(3).getNotes();
-		assertEquals("\nNotes.\nMore notes.", output);
+		assertEquals("Notes.\nMore notes.", output);
 	}
 
 	@Test
@@ -366,8 +366,8 @@ public class ContactManagerAppTest {
 		Meeting meeting2 = testManager.getMeeting(id2);
 		
 		List<Meeting> outputList = testManager.getFutureMeetingList(contact1);
-		assertEquals(outputList.get(0), meeting2);
-		assertEquals(outputList.get(1), meeting1);
+		assertEquals(outputList.get(0), meeting1);
+		assertEquals(outputList.get(1), meeting2);
 		assertEquals(outputList.size(), 2);
 	}
 
@@ -402,8 +402,8 @@ public class ContactManagerAppTest {
 		Meeting meeting2 = testManager.getMeeting(id2);
 
 		List<Meeting> outputList = testManager.getFutureMeetingList(date);
-		assertEquals(outputList.get(0), meeting2);
-		assertEquals(outputList.get(4), meeting1);
+		assertEquals(outputList.get(3), meeting1);
+		assertEquals(outputList.get(4), meeting2);
 		assertEquals(outputList.size(), 5);
 
 		Calendar shortDate = Calendar.getInstance();

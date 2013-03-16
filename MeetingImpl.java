@@ -61,7 +61,6 @@ public class MeetingImpl implements Meeting, PastMeeting, FutureMeeting, Seriali
 	public String getNotes(){
 		return notes;
 	}
-
 	/**
 	* Adds notes to the meeting if meeting occurred in the past. If notes already exist, the new notes are appended.
 	*
@@ -69,6 +68,11 @@ public class MeetingImpl implements Meeting, PastMeeting, FutureMeeting, Seriali
 	* @throws NullPointerException if the notes are null.
 	*/
 	public void addNotes(String text) {
-		notes = notes + "\n" + text;
+		if (notes == null) {
+			notes = text;
+		}
+		else {
+			notes = notes + "\n" + text;	
+		}
 	}
 }

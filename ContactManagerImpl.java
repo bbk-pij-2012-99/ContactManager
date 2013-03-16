@@ -26,7 +26,6 @@ public class ContactManagerImpl implements ContactManager {
 			try(ObjectInputStream objectIn = new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)))) {
 				allMeetings = castReadObject(objectIn.readObject());
 				allContacts = castReadObject(objectIn.readObject());
-				checkForMeetingHeld();
 			}
 			catch(ClassNotFoundException | IOException e) {
 				System.err.println("Error in reading from file: " + e);
@@ -67,172 +66,46 @@ public class ContactManagerImpl implements ContactManager {
 		
 		return allMeetings.size() + 1;
 	}
-	/**
-	* Add a new meeting to be held in the future.
+	/** 
+	* Return TRUE if meeting occurs in the past.
 	*
-	* @param contacts a list of contacts that will participate in the meeting
-	* @param date the date on which the meeting will take place
-	* @return the ID for the meeting
-	* @throws IllegalArgumentException if the meeting is set for a time in the past,
-	* of if any contact is unknown / non-existent
+	* @param meeting a meeting to check whether in the past
+	* @return true if meeting occurs in the past, false otherwise
 	*/
-	public int addFutureMeeting(Set<Contact> contacts, Calendar date){
-
+	private boolean isPastMeeting(Meeting meeting) {
 		Calendar currentDate = Calendar.getInstance();
-		if (date.before(currentDate)) {
-			throw new IllegalArgumentException("Meeting occurs in the past.");
-		}
-
-		for (Contact c : contacts) {
-			if (!allContacts.contains(c)) {
-				throw new IllegalArgumentException("Contact does not exist.");
-			}
-		}
-
-		int id = generateMeetingId();
-		Meeting meeting = new FutureMeetingImpl(id, date, contacts);
-		allMeetings = sortList(allMeetings, meeting);
-		return id;
+		return meeting.getDate().before(currentDate);
 	}
-	/**
-	* Returns the PAST meeting with the requested ID, or null if it there is none.
-	*
-	* @param id the ID for the meeting
-	* @return the meeting with the requested ID, or null if it there is none.
-	* @throws IllegalArgumentException if there is a meeting with that ID happening in the future
-	*/
-	public PastMeeting getPastMeeting(int id){
+	// /**
+	// * Returns list with new meeting inserted in the first index at which the meeting precedes
+	// * the meeting at that index. If the meeting is already in the list it is not added.
+	// *
+	// * Assuming list is already sorted chronologically, earliest to latest occurence, the new
+	// * meeting will be inserted to maintain the sorting.
+	// *
+	// * @param list a chronologically sorted list of meetings
+	// * @param newMeeting the meeting to be inserted into the list
+	// * @return the list with the new meeting inserted chronologically
+	// */
+	// private List<Meeting> sortList(List<Meeting> list, Meeting newMeeting) {
 
-		Meeting meeting = getMeeting(id);
+	// 	if (list.contains(newMeeting)) {
+	// 		return list;
+	// 	}
 
-		if (meeting instanceof PastMeeting) {
-			return (PastMeeting) meeting;
-		}
+	// 	Calendar newDate = newMeeting.getDate();
 
-		if (meeting instanceof FutureMeeting) {
-			throw new IllegalArgumentException("Meeting occurs in the future.");
-		}
+	// 	for (int i = 0; i < list.size(); i++) {
+	// 		Calendar date = list.get(i).getDate();
+	// 		if(newDate.before(date)) {
+	// 			list.add(i, newMeeting);
+	// 			return list;
+	// 		}
+	// 	}
 
-		return null;
-	}
-	/**
-	* Returns the FUTURE meeting with the requested ID, or null if there is none.
-	*
-	* @param id the ID for the meeting
-	* @return the meeting with the requested ID, or null if it there is none.
-	* @throws IllegalArgumentException if there is a meeting with that ID happening in the past
-	*/
-	public FutureMeeting getFutureMeeting(int id){
-		
-		Meeting meeting = getMeeting(id);
-
-		if (meeting instanceof PastMeeting) {
-			throw new IllegalArgumentException("Meeting occurs in the past.");
-		}
-
-		if (meeting instanceof FutureMeeting) {
-			return  (FutureMeeting) meeting;
-		}
-
-		return null;
-	}
-	/**
-	* Returns the meeting with the requested ID, or null if it there is none.
-	*
-	* @param id the ID for the meeting
-	* @return the meeting with the requested ID, or null if it there is none.
-	*/
-	public Meeting getMeeting(int id){
-
-		for (Meeting meeting : allMeetings) {
-			if (meeting.getId() == id) {
-				return meeting;
-			}
-		}
-		
-		return null;
-	}
-	/**
-	* Returns the list of future meetings scheduled with this contact.
-	*
-	* If there are none, the returned list will be empty. Otherwise,
-	* the list will be chronologically sorted and will not contain any
-	* duplicates.
-	*
-	* @param contact one of the user’s contacts
-	* @return the list of future meeting(s) scheduled with this contact (maybe empty).
-	* @throws IllegalArgumentException if the contact does not exist
-	*/
-	public List<Meeting> getFutureMeetingList(Contact contact){
-	
-		// Checks contact exists	
-		getContacts(contact.getId());
-
-		List<Meeting> contactMeetings = new ArrayList<>();
-
-		for (Meeting meeting : allMeetings) {
-			if (meeting instanceof FutureMeeting) {
-				if (meeting.getContacts().contains(contact)) {
-					contactMeetings.add(meeting);	
-				}
-			}
-		}
-
-		return contactMeetings;
-	}
-	/**
-	* Returns list with new meeting inserted in the first index at which the meeting precedes
-	* the meeting at that index. If the meeting is already in the list it is not added.
-	*
-	* Assuming list is already sorted chronologically, earliest to latest occurence, the new
-	* meeting will be inserted to maintain the sorting.
-	*
-	* @param list a chronologically sorted list of meetings
-	* @param newMeeting the meeting to be inserted into the list
-	* @return the list with the new meeting inserted chronologically
-	*/
-	private List<Meeting> sortList(List<Meeting> list, Meeting newMeeting) {
-
-		if (list.contains(newMeeting)) {
-			return list;
-		}
-
-		Calendar newDate = newMeeting.getDate();
-
-		for (int i = 0; i < list.size(); i++) {
-			Calendar date = list.get(i).getDate();
-			if(newDate.before(date)) {
-				list.add(i, newMeeting);
-				return list;
-			}
-		}
-
-		list.add(newMeeting);
-		return list;		
-	}
-	/**
-	* Returns the list of meetings that are scheduled for, or that took
-	* place on, the specified date
-	*
-	* If there are none, the returned list will be empty. Otherwise,
-	* the list will be chronologically sorted and will not contain any
-	* duplicates.
-	*
-	* @param date the date
-	* @return the list of meetings
-	*/
-	public List<Meeting> getFutureMeetingList(Calendar date){
-
-		List<Meeting> dateMeetings = new ArrayList<>();
-
-		for (Meeting meeting : allMeetings) {
-			if (compareDates(date, meeting.getDate())) {
-				dateMeetings.add(meeting);
-			}	
-		}
-
-		return dateMeetings;
-	}
+	// 	list.add(newMeeting);
+	// 	return list;		
+	// }
 	/**
 	* Returns true if the calendars represent the same date and false otherwise
 	*
@@ -246,103 +119,6 @@ public class ContactManagerImpl implements ContactManager {
 			return true;
 		}
 		return false;
-	}
-	/**
-	* Returns the list of past meetings in which this contact has participated.
-	*
-	* If there are none, the returned list will be empty. Otherwise,
-	* the list will be chronologically sorted and will not contain any
-	* duplicates.
-	*
-	* @param contact one of the user’s contacts
-	* @return the list of future meeting(s) scheduled with this contact (maybe empty).
-	* @throws IllegalArgumentException if the contact does not exist
-	*/
-	public List<PastMeeting> getPastMeetingList(Contact contact){
-		
-		// Checks contact exists	
-		getContacts(contact.getId());
-
-		List<PastMeeting> contactMeetings = new ArrayList<>();
-
-		for (Meeting meeting : allMeetings) {
-			if (meeting instanceof PastMeeting) {
-				if (meeting.getContacts().contains(contact)) {
-					contactMeetings.add((PastMeeting) meeting);
-				}	
-			}
-		}
-		
-		return contactMeetings;
-	}
-	/**
-	* Create a new record for a meeting that took place in the past.
-	*
-	* @param contacts a list of participants
-	* @param date the date on which the meeting took place
-	* @param text messages to be added about the meeting.
-	* @throws IllegalArgumentException if the list of contacts is empty, 
-	* or any of the contacts does not exist
-	* @throws NullPointerException if any of the arguments is null
-	*/
-	public void addNewPastMeeting(Set<Contact> contacts, Calendar date, String text){
-
-		if (contacts == null) {
-			throw new NullPointerException("No contacts given.");
-		}
-		if (date == null) {
-			throw new NullPointerException("No date given.");
-		}
-		if (text == null) {
-			throw new NullPointerException("No notes given.");
-		}
-
-		if (contacts.isEmpty()) {
-			throw new IllegalArgumentException("No contacts given.");
-		}
-
-		for (Contact c : contacts) {
-			if (!allContacts.contains(c)) {
-				throw new IllegalArgumentException("Contact does not exist.");
-			}
-		}
-
-		int id = generateMeetingId();
-		Meeting meeting = new PastMeetingImpl(id, date, contacts);
-		allMeetings = sortList(allMeetings, meeting);
-		addMeetingNotes(id, text);
-	}
-	/**
-	* Add notes to a meeting.
-	*
-	* This method is used when a future meeting takes place, and is
-	* then converted to a past meeting (with notes).
-	*
-	* It can be also used to add notes to a past meeting at a later date.
-	*
-	* @param id the ID of the meeting
-	* @param text messages to be added about the meeting.
-	* @throws IllegalArgumentException if the meeting does not exist
-	* @throws IllegalStateException if the meeting is set for a date in the future
-	* @throws NullPointerException if the notes are null
-	*/
-	public void addMeetingNotes(int id, String text){
-
-		if (text == null) {
-			throw new NullPointerException("No notes given.");
-		}
-		
-		Meeting meeting = getMeeting(id);
-
-		if (meeting == null) {
-			throw new IllegalArgumentException("Meeting does not exist.");
-		}
-
-		if (meeting instanceof FutureMeeting) {
-			throw new IllegalStateException("Meeting occurs in the future.");
-		}
-
-		((PastMeetingImpl) meeting).addNotes(text);
 	}
 	/**
 	* Create a new contact with the specified name and notes.
@@ -412,26 +188,267 @@ public class ContactManagerImpl implements ContactManager {
 		return contacts;
 	}
 	/**
-	* Converts any future meetings that have been held into past meetings.
-	* Meetings retain the same Id.
+	* Add a new meeting to be held in the future.
 	*
+	* @param contacts a list of contacts that will participate in the meeting
+	* @param date the date on which the meeting will take place
+	* @return the ID for the meeting
+	* @throws IllegalArgumentException if the meeting is set for a time in the past,
+	* of if any contact is unknown / non-existent
 	*/
-	private void checkForMeetingHeld() {
+	public int addFutureMeeting(Set<Contact> contacts, Calendar date){
 
-		Calendar present = Calendar.getInstance();
+		Calendar currentDate = Calendar.getInstance();
+		if (date.before(currentDate)) {
+			throw new IllegalArgumentException("Meeting occurs in the past.");
+		}
 
-		for (int i = 0; i < allMeetings.size(); i++) {
-			Meeting meeting = allMeetings.get(i);
-			if (meeting instanceof FutureMeeting) {
-				if (meeting.getDate().before(present)) {
-					Meeting pastMeeting = new PastMeetingImpl(meeting.getId(), meeting.getDate(), meeting.getContacts());
-					allMeetings.set(i, pastMeeting);
-				}
-				else {
-					break;
-				}
+		for (Contact c : contacts) {
+			if (!allContacts.contains(c)) {
+				throw new IllegalArgumentException("Contact does not exist.");
 			}
 		}
+
+		int id = generateMeetingId();
+		Meeting meeting = new MeetingImpl(id, date, contacts);
+		allMeetings.add(meeting);
+		// allMeetings = sortList(allMeetings, meeting);
+		return id;
+	}
+	/**
+	* Create a new record for a meeting that took place in the past.
+	*
+	* @param contacts a list of participants
+	* @param date the date on which the meeting took place
+	* @param text messages to be added about the meeting.
+	* @throws IllegalArgumentException if the list of contacts is empty, 
+	* or any of the contacts does not exist
+	* @throws NullPointerException if any of the arguments is null
+	*/
+	public void addNewPastMeeting(Set<Contact> contacts, Calendar date, String text){
+
+		if (contacts == null) {
+			throw new NullPointerException("No contacts given.");
+		}
+		if (date == null) {
+			throw new NullPointerException("No date given.");
+		}
+		if (text == null) {
+			throw new NullPointerException("No notes given.");
+		}
+
+		if (contacts.isEmpty()) {
+			throw new IllegalArgumentException("No contacts given.");
+		}
+
+		for (Contact c : contacts) {
+			if (!allContacts.contains(c)) {
+				throw new IllegalArgumentException("Contact does not exist.");
+			}
+		}
+
+		int id = generateMeetingId();
+		Meeting meeting = new MeetingImpl(id, date, contacts);
+		allMeetings.add(meeting);
+		// allMeetings = sortList(allMeetings, meeting);
+		addMeetingNotes(id, text);
+	}
+	/**
+	* Add notes to a meeting.
+	*
+	* This method is used when a future meeting takes place, and is
+	* then converted to a past meeting (with notes).
+	*
+	* It can be also used to add notes to a past meeting at a later date.
+	*
+	* @param id the ID of the meeting
+	* @param text messages to be added about the meeting.
+	* @throws IllegalArgumentException if the meeting does not exist
+	* @throws IllegalStateException if the meeting is set for a date in the future
+	* @throws NullPointerException if the notes are null
+	*/
+	public void addMeetingNotes(int id, String text){
+
+		if (text == null) {
+			throw new NullPointerException("No notes given.");
+		}
+		
+		Meeting meeting = getMeeting(id);
+
+		if (meeting == null) {
+			throw new IllegalArgumentException("Meeting does not exist.");
+		}
+
+		if (!isPastMeeting(meeting)) {
+			throw new IllegalStateException("Meeting occurs in the future.");
+		}
+
+		((MeetingImpl) meeting).addNotes(text);
+	}
+	/**
+	* Returns the meeting with the requested ID, or null if it there is none.
+	*
+	* @param id the ID for the meeting
+	* @return the meeting with the requested ID, or null if it there is none.
+	*/
+	public Meeting getMeeting(int id){
+
+		for (Meeting meeting : allMeetings) {
+			if (meeting.getId() == id) {
+				return meeting;
+			}
+		}
+		
+		return null;
+	}
+	/**
+	* Returns the PAST meeting with the requested ID, or null if it there is none.
+	*
+	* @param id the ID for the meeting
+	* @return the meeting with the requested ID, or null if it there is none.
+	* @throws IllegalArgumentException if there is a meeting with that ID happening in the future
+	*/
+	public PastMeeting getPastMeeting(int id){
+
+		Meeting meeting = getMeeting(id);
+		if (meeting == null) {
+			return null;
+		}
+
+		if (isPastMeeting(meeting)) {
+			return (PastMeeting) meeting;
+		}
+		else {
+			throw new IllegalArgumentException("Meeting occurs in the future.");
+		}
+	}
+	/**
+	* Returns the FUTURE meeting with the requested ID, or null if there is none.
+	*
+	* @param id the ID for the meeting
+	* @return the meeting with the requested ID, or null if it there is none.
+	* @throws IllegalArgumentException if there is a meeting with that ID happening in the past
+	*/
+	public FutureMeeting getFutureMeeting(int id){
+		
+		Meeting meeting = getMeeting(id);
+		if (meeting == null) {
+			return null;
+		}
+
+		if (isPastMeeting(meeting)) {
+			throw new IllegalArgumentException("Meeting occurs in the past.");
+		}
+		else {
+			return  (FutureMeeting) meeting;
+		}
+	}
+	/**
+	* Returns the list of future meetings scheduled with this contact.
+	*
+	* If there are none, the returned list will be empty. Otherwise,
+	* the list will be chronologically sorted and will not contain any
+	* duplicates.
+	*
+	* @param contact one of the user’s contacts
+	* @return the list of future meeting(s) scheduled with this contact (maybe empty).
+	* @throws IllegalArgumentException if the contact does not exist
+	*/
+	public List<Meeting> getFutureMeetingList(Contact contact){
+	
+		// Checks contact exists	
+		// getContacts(contact.getId());
+
+		// List<Meeting> contactMeetings = new ArrayList<>();
+
+		// for (Meeting meeting : allMeetings) {
+		// 	if (meeting.getContacts().contains(contact) && !isPastMeeting(meeting)) {
+		// 		contactMeetings.add(meeting);	
+		// 	}
+		// }
+
+		List<Meeting> contactMeetings = new ArrayList<>();
+		List<Meeting> allContactMeetings = getMeetingList(contact);
+		for (Meeting meeting : allContactMeetings) {
+			if(!isPastMeeting(meeting)) {
+				contactMeetings.add(meeting);
+			}
+		}
+		return contactMeetings;
+	}
+	/**
+	* Returns the list of meetings that are scheduled for, or that took
+	* place on, the specified date
+	*
+	* If there are none, the returned list will be empty. Otherwise,
+	* the list will be chronologically sorted and will not contain any
+	* duplicates.
+	*
+	* @param date the date
+	* @return the list of meetings
+	*/
+	public List<Meeting> getFutureMeetingList(Calendar date){
+
+		List<Meeting> dateMeetings = new ArrayList<>();
+
+		for (Meeting meeting : allMeetings) {
+			if (compareDates(date, meeting.getDate())) {
+				dateMeetings.add(meeting);
+			}	
+		}
+
+		return dateMeetings;
+	}
+	/**
+	* Returns the list of past meetings in which this contact has participated.
+	*
+	* If there are none, the returned list will be empty. Otherwise,
+	* the list will be chronologically sorted and will not contain any
+	* duplicates.
+	*
+	* @param contact one of the user’s contacts
+	* @return the list of future meeting(s) scheduled with this contact (maybe empty).
+	* @throws IllegalArgumentException if the contact does not exist
+	*/
+	public List<PastMeeting> getPastMeetingList(Contact contact){
+		
+		// Checks contact exists	
+		// getContacts(contact.getId());
+
+		// List<PastMeeting> contactMeetings = new ArrayList<>();
+
+		// for (Meeting meeting : allMeetings) {
+		// 		if (meeting.getContacts().contains(contact) && isPastMeeting(meeting)) {
+		// 			contactMeetings.add((PastMeeting) meeting);
+		// 		}	
+		// }
+		
+		// return contactMeetings;
+
+		List<PastMeeting> contactMeetings = new ArrayList<>();
+		List<Meeting> allContactMeetings = getMeetingList(contact);
+		for (Meeting meeting : allContactMeetings) {
+			if(isPastMeeting(meeting)) {
+				contactMeetings.add((PastMeeting) meeting);
+			}
+		}
+		return contactMeetings;
+	}
+	private List<Meeting> getMeetingList(Contact contact) {
+		
+		// Checks contact exists	
+		getContacts(contact.getId());
+
+		List<Meeting> contactMeetings = new ArrayList<>();
+
+		for (Meeting meeting : allMeetings) {
+				if (meeting.getContacts().contains(contact)) {
+					contactMeetings.add(meeting);
+				}	
+		}
+		
+		return contactMeetings;		
+
 	}
 	/**
 	* Save all data to disk.
